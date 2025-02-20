@@ -4,6 +4,20 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleJvm" value="23" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/rapidticket-auth-api" />
+            <option value="$PROJECT_DIR$/rapidticket-functions-api" />
+            <option value="$PROJECT_DIR$/rapidticket-register-api" />
+            <option value="$PROJECT_DIR$/rapidticket-shows-api" />
+            <option value="$PROJECT_DIR$/rapidticket-venues-api" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/rapidticket-functions-api" />
         <option name="gradleJvm" value="23" />
         <option name="modules">

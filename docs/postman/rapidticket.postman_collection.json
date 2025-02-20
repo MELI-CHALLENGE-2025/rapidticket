@@ -1,0 +1,487 @@
+{
+	"info": {
+		"_postman_id": "d3311168-b31b-4306-9a6f-f967767547fe",
+		"name": "rapidticket",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41959408"
+	},
+	"item": [
+		{
+			"name": "Shows",
+			"item": [
+				{
+					"name": "/shows",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"code\": \"SHOW17\",\r\n    \"name\": \"The Great Show\",\r\n    \"description\": \"An amazing performance that you can't miss!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/shows",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"shows"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/shows",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/shows?size=1&page=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"shows"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "1"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "code",
+									"value": "SHOW16",
+									"disabled": true
+								},
+								{
+									"key": "name",
+									"value": "the",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/shows/{code}",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/shows/SH001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"shows",
+								"SH001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/shows/{code}",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"the Great Show\",\r\n    \"description\": \"an amazing performance that you can't miss!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/shows/SHOW17",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"shows",
+								"SHOW17"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/shows/{code}",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/shows/SHOW17",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"shows",
+								"SHOW17"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Venues",
+			"item": [
+				{
+					"name": "/venues",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"code\": \"VENUE1\",\r\n    \"name\": \"Theatre Hall A\",\r\n    \"location\": \"123 Main St, City, Country\",\r\n    \"capacity\": 300\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8082/api/v1/venues",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"v1",
+								"venues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/venues",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/api/v1/venues?size=1&page=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"v1",
+								"venues"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "1"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "code",
+									"value": "VENUE1",
+									"disabled": true
+								},
+								{
+									"key": "minCapacity",
+									"value": "300",
+									"disabled": true
+								},
+								{
+									"key": "maxCapacity",
+									"value": "300",
+									"disabled": true
+								},
+								{
+									"key": "location",
+									"value": "123 Main St",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/venues/{code}",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/api/v1/venues/VN001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"v1",
+								"venues",
+								"VN001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/venues/{code}",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Theatre Hall A\",\r\n    \"location\": \"123 Main St, City, Country\",\r\n    \"capacity\": 301\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8082/api/v1/venues/VENUE1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"v1",
+								"venues",
+								"VENUE1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/venues/{code}",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/api/v1/venues/VENUE1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"v1",
+								"venues",
+								"VENUE1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Functions",
+			"item": [
+				{
+					"name": "/functions",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"code\": \"FN004\",\r\n    \"showCode\": \"SH001\",\r\n    \"venueCode\": \"VN001\",\r\n    \"date\": \"2025-03-10T16:30:00.000+00:00\",\r\n    \"basePrice\": 20.5,\r\n    \"currency\": \"USD\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8083/api/v1/functions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"functions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/functions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/api/v1/functions?size=10&page=1&code=FN002&minBasePrice=51&maxBasePrice=300&currency=USD&showCode=SH002&venueCode=VN001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"functions"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "code",
+									"value": "FN002"
+								},
+								{
+									"key": "minBasePrice",
+									"value": "51"
+								},
+								{
+									"key": "maxBasePrice",
+									"value": "300"
+								},
+								{
+									"key": "currency",
+									"value": "USD"
+								},
+								{
+									"key": "showCode",
+									"value": "SH002"
+								},
+								{
+									"key": "venueCode",
+									"value": "VN001"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/functions/{code}",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/api/v1/functions/FN004",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"functions",
+								"FN004"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/functions/{code}",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"showCode\": \"SH002\",\r\n    \"venueCode\": \"VN002\",\r\n    \"date\": \"2025-03-10T16:30:00.000+00:00\",\r\n    \"basePrice\": 20.7,\r\n    \"currency\": \"USD\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8083/api/v1/functions/FN004",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"functions",
+								"FN004"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/functions/{code}",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/api/v1/functions/FN001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"functions",
+								"FN001"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

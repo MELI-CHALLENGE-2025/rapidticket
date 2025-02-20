@@ -12,8 +12,8 @@ services:
     networks:
       - rapidticket-network
     volumes:
-      - ./src/main/resources/db/001-schema.sql:/docker-entrypoint-initdb.d/001-schema.sql
-      - ./src/main/resources/db/002-data.sql:/docker-entrypoint-initdb.d/002-data.sql
+      - ./docs/db/001-schema.sql:/docker-entrypoint-initdb.d/001-schema.sql
+      - ./docs/db/002-data.sql:/docker-entrypoint-initdb.d/002-data.sql
 
 networks:
   rapidticket-network:

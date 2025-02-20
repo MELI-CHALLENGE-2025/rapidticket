@@ -41,59 +41,6 @@ The RapidTicket API is designed with scalability and efficiency in mind. The API
 
 ---
 
-## API Endpoints ⚡
-
-The following endpoints are available for interacting with the **RapidTicket API**:
-
-### 1. **Create Show**
-- **Endpoint**: `POST /shows`
-- **Description**: Add a new show with its details.
-- **Request Body**: `ShowDTO`
-    - Show name, description, price, sections, available seats, etc.
-
-### 2. **List Shows**
-- **Endpoint**: `GET /shows`
-- **Description**: Get a list of all available shows.
-- **Response**: List of shows with relevant details (price, schedule, etc.).
-
-### 3. **Search Show by Code**
-- **Endpoint**: `GET /shows/{code}`
-- **Description**: Find a specific show by its code.
-- **Response**: Show details.
-
-### 4. **Update Show**
-- **Endpoint**: `PUT /shows/{code}`
-- **Description**: Update show details by its code.
-- **Request Body**: `ShowDTO`
-    - Updated show data (e.g., new date, price, section).
-
-### 5. **Delete Show**
-- **Endpoint**: `DELETE /shows/{code}`
-- **Description**: Delete a show by its code.
-- **Response**: Confirmation of deletion.
-
-### 6. **Reserve Tickets**
-- **Endpoint**: `POST /reservations`
-- **Description**: Make a reservation for a specific show, with seat selection and customer info.
-- **Request Body**: `ReservationDTO`
-    - DNI, name, selected seats, etc.
-
----
-
-## Example of ShowDTO 📝
-
-```java
-public class ShowDTO {
-    private String code;           // Unique identifier for the show
-    private String name;           // Name of the show
-    private String description;    // Show description
-    private LocalDateTime date;    // Date and time of the show
-    private List<SectionDTO> sections; // Sections available in the venue
-}
-```
-
----
-
 ## Database Setup 🗃️
 
 The API uses a **PostgreSQL** database to store show and reservation data.
@@ -159,26 +106,17 @@ While **test coverage** is **desirable** but not mandatory for this project, it�
 Use **JUnit** for unit and integration testing:
 
 ```bash
-./mvnw test
+./gradlew test
 ```
 
----
+```bash
+./rapidticket-shows-api/gradlew test
+```  
+```bash
+./rapidticket-venues-api/gradlew test
+```  
 
-## Deployment 🌐
-
-The API is designed to be deployed to the cloud for scalability. You can deploy it to AWS, Azure, or any other preferred cloud provider. Below is an example of how to deploy on **AWS** using **Docker**:
-
-1. **Build the Docker image**:
-
-   ```bash
-   docker build -t rapidticket-api .
-   ```
-
-2. **Push to AWS ECR (Elastic Container Registry)**.
-
-3. **Deploy the Docker container** to an EC2 instance or **AWS Elastic Beanstalk**.
-
----
+---  
 
 ## Instructions for Running Locally 🖥️
 
@@ -192,13 +130,13 @@ The API is designed to be deployed to the cloud for scalability. You can deploy 
 2. **Set Up Dependencies**:
 
    ```bash
-   ./mvnw install
+   ./gradlew install
    ```
 
 3. **Run the Application**:
 
    ```bash
-   ./mvnw spring-boot:run
+   ./gradlew spring-boot:run
    ```
 
 ---
@@ -218,9 +156,3 @@ We welcome contributions! To contribute to this project:
 ## License 📄
 
 This project is licensed under the MIT License - see the [LICENSE](rapidticket-shows-api/LICENSE) file for details.
-
-
-
-##PENDING
-
-docker run -d --name sonar -p 9000:9000 sonarqube:lts-community

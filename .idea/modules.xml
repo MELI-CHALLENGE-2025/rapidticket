@@ -2,10 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/rapidticket.iml" filepath="$PROJECT_DIR$/.idea/rapidticket.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/rapidticket-functions-api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/rapidticket-functions-api.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/rapidticket-shows-api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/rapidticket-shows-api.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/rapidticket-venues-api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/rapidticket-venues-api.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/rapidticket-auth-api/rapidticket.rapidticket-auth-api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/rapidticket-auth-api/rapidticket.rapidticket-auth-api.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/rapidticket-functions-api/rapidticket.rapidticket-functions-api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/rapidticket-functions-api/rapidticket.rapidticket-functions-api.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/rapidticket-register-api/rapidticket.rapidticket-register-api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/rapidticket-register-api/rapidticket.rapidticket-register-api.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/rapidticket-shows-api/rapidticket.rapidticket-shows-api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/rapidticket-shows-api/rapidticket.rapidticket-shows-api.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/rapidticket-venues-api/rapidticket.rapidticket-venues-api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/rapidticket-venues-api/rapidticket.rapidticket-venues-api.main.iml" />
     </modules>
   </component>
 </project>
