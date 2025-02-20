@@ -13,19 +13,20 @@ import com.rapidticket.show.model.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.sql.Timestamp;
 import java.sql.Types;
-import java.time.ZoneId;
 import java.util.*;
 
 @Slf4j
 @Repository
 @RequiredArgsConstructor
 public class FunctionRepositoryImpl implements FunctionRepository {
+    private static final String SHOW_DESCRIPTION = "show_description";
+    private static final String VENUE_CAPACITY = "venue_capacity";
+    private static final String VENUE_LOCATION = "venue_location";
     private static final String SHOW_ID = "show_id";
     private static final String VENUE_ID = "venue_id";
-    private static final String BASE_PRICE = "base_price";
-    private static final String CURRENCY = "currency";
+    private static final String FUNCTION_BASE_PRICE = "function_base_price";
+    private static final String FUNCTION_CURRENCY = "function_currency";
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -42,8 +43,8 @@ public class FunctionRepositoryImpl implements FunctionRepository {
                     .addValue(SHOW_ID, UUID.fromString(showId))
                     .addValue(VENUE_ID, UUID.fromString(venueId))
                     .addValue("date", function.getDate())
-                    .addValue(BASE_PRICE, function.getBasePrice())
-                    .addValue(CURRENCY, function.getCurrency().name(), Types.OTHER);
+                    .addValue(FUNCTION_BASE_PRICE, function.getBasePrice())
+                    .addValue(FUNCTION_CURRENCY, function.getCurrency().name(), Types.OTHER);
 
             int rowsAffected = namedParameterJdbcTemplate.update(sql, params);
             return rowsAffected > 0 ? uuid.toString() : null;
@@ -71,40 +72,52 @@ public class FunctionRepositoryImpl implements FunctionRepository {
         try {
             int offset = (dto.getPage() - 1) * dto.getSize();
 
-            StringBuilder sql = new StringBuilder("SELECT id, code, show_id, venue_id, date, base_price, currency, created_at FROM functions WHERE 1=1 ");
+            StringBuilder sql = new StringBuilder(
+                    """
+                    SELECT
+                        f.id AS function_id, f.code AS function_code, f.date AS function_date,
+                        f.base_price AS function_base_price, f.currency AS function_currency, f.created_at, 
+                        s.id AS show_id, s.code AS show_code, s.name AS show_name, s.description AS show_description,
+                        v.id AS venue_id, v.code AS venue_code, v.name AS venue_name, v.capacity AS venue_capacity, v.location AS venue_location 
+                    FROM functions f
+                    JOIN shows s ON f.show_id = s.id
+                    JOIN venues v ON f.venue_id = v.id
+                    WHERE 1=1
+                    """
+            );
             MapSqlParameterSource params = new MapSqlParameterSource();
 
             if (dto.getCode() != null && !dto.getCode().isEmpty()) {
-                sql.append("AND code LIKE :code ");
+                sql.append("AND f.code LIKE :code ");
                 params.addValue("code", "%" + dto.getCode() + "%");
             }
 
             if (dto.getShowCode() != null && !dto.getShowCode().isEmpty()) {
-                sql.append("AND show_id LIKE :showId ");
-                params.addValue("showId", "%" + dto.getShowCode() + "%");
+                sql.append("AND s.code LIKE :show_code ");
+                params.addValue("show_code", "%" + dto.getShowCode() + "%");
             }
 
             if (dto.getVenueCode() != null && !dto.getVenueCode().isEmpty()) {
-                sql.append("AND venue_id LIKE :venueId ");
-                params.addValue("venueId", "%" + dto.getVenueCode() + "%");
+                sql.append("AND v.code LIKE :venue_code ");
+                params.addValue("venue_code", "%" + dto.getVenueCode() + "%");
             }
 
             if (dto.getMinBasePrice() != null) {
-                sql.append("AND base_price >= :minBasePrice ");
+                sql.append("AND f.base_price >= :minBasePrice ");
                 params.addValue("minBasePrice", dto.getMinBasePrice());
             }
 
             if (dto.getMaxBasePrice() != null) {
-                sql.append("AND base_price <= :maxBasePrice ");
+                sql.append("AND f.base_price <= :maxBasePrice ");
                 params.addValue("maxBasePrice", dto.getMaxBasePrice());
             }
 
-            if (dto.getCurrency() != null && !dto.getCurrency().isEmpty()) {
-                sql.append("AND currency LIKE :currency ");
-                params.addValue(CURRENCY, "%" + dto.getCurrency() + "%");
+            if (dto.getCurrency() != null) {
+                sql.append("AND f.currency = :currencies ");
+                params.addValue("currencies", dto.getCurrency());
             }
 
-            sql.append("ORDER BY created_at ASC LIMIT :size OFFSET :offset");
+            sql.append("ORDER BY f.created_at ASC LIMIT :size OFFSET :offset");
             params.addValue("size", dto.getSize());
             params.addValue("offset", offset);
 
@@ -118,7 +131,18 @@ public class FunctionRepositoryImpl implements FunctionRepository {
     @Override
     public Optional<Function> findByCode(String code) {
         try {
-            String sql = "SELECT * FROM functions WHERE code = :code";
+            String sql =
+            """
+            SELECT
+                f.id AS function_id, f.code AS function_code, f.date AS function_date, f.base_price AS function_base_price, f.currency AS function_currency,
+                s.id AS show_id, s.code AS show_code, s.name AS show_name, s.description AS show_description,
+                v.id AS venue_id, v.code AS venue_code, v.name AS venue_name, v.capacity AS venue_capacity, v.location AS venue_location
+            FROM functions f
+            JOIN shows s ON f.show_id = s.id
+            JOIN venues v ON f.venue_id = v.id
+            WHERE f.code = :code
+            """;
+
             SqlParameterSource params = new MapSqlParameterSource("code", code);
             List<Function> functions = namedParameterJdbcTemplate.query(sql, params, mapper);
 
@@ -139,11 +163,11 @@ public class FunctionRepositoryImpl implements FunctionRepository {
         try {
             String sql = "UPDATE functions SET show_id = :show_id, venue_id = :venue_id, date = :date, base_price = :base_price, currency = :currency WHERE code = :code";
             MapSqlParameterSource params = new MapSqlParameterSource()
-                    .addValue(SHOW_ID, entity.getShowId())
-                    .addValue(VENUE_ID, entity.getVenueId())
+                    .addValue(SHOW_ID, UUID.fromString(entity.getShow().getId()))
+                    .addValue(VENUE_ID, UUID.fromString(entity.getVenue().getId()))
                     .addValue("date", entity.getDate())
-                    .addValue(BASE_PRICE, entity.getBasePrice())
-                    .addValue(CURRENCY, entity.getCurrency())
+                    .addValue("base_price", entity.getBasePrice())
+                    .addValue("currency", entity.getCurrency().name(), Types.OTHER)
                     .addValue("code", code);
 
             int rowsAffected = namedParameterJdbcTemplate.update(sql, params);
@@ -168,14 +192,27 @@ public class FunctionRepositoryImpl implements FunctionRepository {
     }
 
     private final RowMapper<Function> mapper = (rs, rowNum) -> {
+        Show show = new Show();
+        show.setId(rs.getString(SHOW_ID));
+        show.setCode(rs.getString("show_code"));
+        show.setName(rs.getString("show_name"));
+        show.setDescription(rs.getString(SHOW_DESCRIPTION));
+
+        Venue venue = new Venue();
+        venue.setId(rs.getString(VENUE_ID));
+        venue.setCode(rs.getString("venue_code"));
+        venue.setName(rs.getString("venue_name"));
+        venue.setCapacity(rs.getInt(VENUE_CAPACITY));
+        venue.setLocation(rs.getString(VENUE_LOCATION));
+
         Function function = new Function();
-        function.setId(rs.getString("id"));
-        function.setCode(rs.getString("code"));
-        function.setShowId(rs.getString(SHOW_ID));
-        function.setVenueId(rs.getString(VENUE_ID));
-        function.setDate(rs.getDate("date"));
-        function.setBasePrice(rs.getDouble(BASE_PRICE));
-        function.setCurrency(EnumCurrency.valueOf(rs.getString(CURRENCY)));
+        function.setId(rs.getString("function_id"));
+        function.setCode(rs.getString("function_code"));
+        function.setShow(show);
+        function.setVenue(venue);
+        function.setDate(rs.getTimestamp("function_date"));
+        function.setBasePrice(rs.getDouble(FUNCTION_BASE_PRICE));
+        function.setCurrency(EnumCurrency.valueOf(rs.getString(FUNCTION_CURRENCY)));
 
         return function;
     };

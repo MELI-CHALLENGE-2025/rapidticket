@@ -3,48 +3,57 @@ package com.rapidticket.show.business;
 import static com.rapidticket.show.utils.ConstantMessages.*;
 import static com.rapidticket.show.utils.FunctionConstantMessages.*;
 
+import com.rapidticket.show.domain.dto.request.FunctionCreateRequestDTO;
+import com.rapidticket.show.domain.dto.response.FunctionListResponseDTO;
 import com.rapidticket.show.domain.dto.request.FunctionUpdateRequestDTO;
 import com.rapidticket.show.domain.dto.request.FunctionListRequestDTO;
-import com.rapidticket.show.model.Show;
-import com.rapidticket.show.model.Venue;
-import com.rapidticket.show.repository.ShowRepository;
-import com.rapidticket.show.repository.VenueRepository;
+import com.rapidticket.show.domain.mapper.ShowMapper;
+import com.rapidticket.show.domain.mapper.VenueMapper;
 import com.rapidticket.show.validations.FunctionValidation;
 import com.rapidticket.show.repository.FunctionRepository;
 import com.rapidticket.show.domain.mapper.FunctionMapper;
+import com.rapidticket.show.validations.VenueValidation;
+import com.rapidticket.show.validations.ShowValidation;
+import com.rapidticket.show.repository.VenueRepository;
 import com.rapidticket.show.exception.CustomException;
+import com.rapidticket.show.repository.ShowRepository;
 import com.rapidticket.show.domain.dto.FunctionDTO;
 import com.rapidticket.show.response.Response;
-import com.rapidticket.show.validations.ShowValidation;
-import com.rapidticket.show.validations.VenueValidation;
 import org.springframework.stereotype.Service;
 import org.springframework.http.HttpStatus;
 import com.rapidticket.show.model.Function;
+import com.rapidticket.show.model.Show;
+import com.rapidticket.show.model.Venue;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class FunctionBusinessImpl implements FunctionBusiness {
+    private static final String MAP_KEY_SHOW_ID = "showId";
+    private static final String MAP_KEY_VENUE_ID = "venueId";
+
     private final FunctionRepository functionRepository;
     private final ShowRepository showRepository;
     private final VenueRepository venueRepository;
 
     @Override
-    public Response<Void> create(FunctionDTO dto) throws CustomException {
+    public Response<Void> create(FunctionCreateRequestDTO dto) throws CustomException {
         log.info("Starting function creation process - Function code: {}", dto.getCode());
         Response<Void> response = new Response<>();
         try {
             FunctionValidation.isExistsByCode(this.functionRepository.existsByCode(dto.getCode()));
-            Show show = this.showRepository.findByCode(dto.getShowCode()).orElse(null);
+            Show show = showRepository.findByCode(dto.getShowCode()).orElse(null);
             ShowValidation.isNull(show == null);
-            Venue venue = this.venueRepository.findByCode(dto.getVenueCode()).orElse(null);
+            Venue venue = venueRepository.findByCode(dto.getVenueCode()).orElse(null);
             VenueValidation.isNull(venue == null);
-            String functionId = this.functionRepository.create(show.getId(), venue.getId(), FunctionMapper.INSTANCE.toEntity(dto));
+            String functionId = this.functionRepository.create(show.getId(), venue.getId(), FunctionMapper.INSTANCE.toEntity(dto, show, venue));
             FunctionValidation.isCreate(functionId != null);
             response = new Response<>(HttpStatus.CREATED.value(), UIM001, DIM001, EMPTY_STRING, EMPTY_STRING, null);
         } catch (CustomException e) {
@@ -65,11 +74,11 @@ public class FunctionBusinessImpl implements FunctionBusiness {
     }
 
     @Override
-    public Response<List<FunctionDTO>> listAllWithFilters(FunctionListRequestDTO functionListRequestDTO) {
+    public Response<List<FunctionListResponseDTO>> listAllWithFilters(FunctionListRequestDTO functionListRequestDTO) {
         log.info("Starting retrieval of all functions");
-        Response<List<FunctionDTO>> response = new Response<>();
+        Response<List<FunctionListResponseDTO>> response = new Response<>();
         try {
-            List<FunctionDTO> listFunctionDto = FunctionMapper.INSTANCE.toListDto(
+            List<FunctionListResponseDTO> listFunctionDto = FunctionMapper.INSTANCE.toListDto(
                     functionRepository.findAllWithFilters(functionListRequestDTO)
             );
             response = new Response<>(HttpStatus.OK.value(), UIM002, DIM002, EMPTY_STRING, EMPTY_STRING, listFunctionDto);
@@ -93,7 +102,13 @@ public class FunctionBusinessImpl implements FunctionBusiness {
         try {
             Function function = this.functionRepository.findByCode(code).orElse(null);
             FunctionValidation.isNull(function == null);
-            response = new Response<>(HttpStatus.OK.value(), UIM003, DIM003, EMPTY_STRING, EMPTY_STRING, FunctionMapper.INSTANCE.toDto(function));
+            FunctionDTO functionDto = FunctionMapper.INSTANCE.toDto(
+                    function,
+                    ShowMapper.INSTANCE.toDto(function.getShow()),
+                    VenueMapper.INSTANCE.toDto(function.getVenue())
+            );
+
+            response = new Response<>(HttpStatus.OK.value(), UIM003, DIM003, EMPTY_STRING, EMPTY_STRING, functionDto);
         } catch (CustomException e) {
             log.warn("Function not found - Code: {}, Error: {}", code, e.getMessage());
             response = new Response<>(e.getStatus(), e.getUserMessage(), e.getMessage(), EMPTY_STRING, EMPTY_STRING, null);
@@ -116,8 +131,12 @@ public class FunctionBusinessImpl implements FunctionBusiness {
         log.info("Starting function update - Code: {} ", code);
         Response<Void> response = new Response<>();
         try {
+            Show show = showRepository.findByCode(dto.getShowCode()).orElse(null);
+            ShowValidation.isNull(show == null);
+            Venue venue = venueRepository.findByCode(dto.getVenueCode()).orElse(null);
+            VenueValidation.isNull(venue == null);
             FunctionValidation.isNotExistsByCode(this.functionRepository.existsByCode(code));
-            FunctionValidation.isUpdate(this.functionRepository.updateWithCode(code, FunctionMapper.INSTANCE.toEntity(dto)));
+            FunctionValidation.isUpdate(this.functionRepository.updateWithCode(code, FunctionMapper.INSTANCE.toEntity(dto, show, venue)));
             response = new Response<>(HttpStatus.OK.value(), UIM004, DIM004, EMPTY_STRING, EMPTY_STRING, null);
         } catch (CustomException e) {
             log.warn("Function update validation failed - Code: {}, Error: {}", code, e.getMessage());

@@ -1,6 +1,8 @@
 package com.rapidticket.show.rest;
 
+import com.rapidticket.show.domain.dto.request.FunctionCreateRequestDTO;
 import com.rapidticket.show.domain.dto.request.FunctionUpdateRequestDTO;
+import com.rapidticket.show.domain.dto.response.FunctionListResponseDTO;
 import com.rapidticket.show.domain.dto.request.FunctionListRequestDTO;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,12 +37,12 @@ public class FunctionRest {
     @Operation(summary = "Create a new function", description = "Saves a new function in the database.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "created successfully",
-                    content = @Content(schema = @Schema(implementation = FunctionDTO.class))),
+                    content = @Content(schema = @Schema(implementation = FunctionCreateRequestDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Response<Void> create(@Valid @RequestBody FunctionDTO dto) {
+    public Response<Void> create(@Valid @RequestBody FunctionCreateRequestDTO dto) {
         return this.functionBusiness.create(dto);
     }
 
@@ -56,26 +58,8 @@ public class FunctionRest {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping
-    public Response<List<FunctionDTO>> listAllWithFilters(
-            @RequestParam(required = false) String code,
-            @RequestParam(required = false) String showCode,
-            @RequestParam(required = false) String venueCode,
-            @RequestParam(required = false) Double minBasePrice,
-            @RequestParam(required = false) Double maxBasePrice,
-            @RequestParam(required = false) String currency,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
+    public Response<List<FunctionListResponseDTO>> listAllWithFilters(@Valid @ModelAttribute FunctionListRequestDTO dto
     ) {
-        FunctionListRequestDTO dto = new FunctionListRequestDTO();
-        dto.setCode(code);
-        dto.setShowCode(showCode);
-        dto.setVenueCode(venueCode);
-        dto.setMinBasePrice(minBasePrice);
-        dto.setMaxBasePrice(maxBasePrice);
-        dto.setCurrency(currency);
-        dto.setPage(page);
-        dto.setSize(size);
-
         return this.functionBusiness.listAllWithFilters(dto);
     }
 

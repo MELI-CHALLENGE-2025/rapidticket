@@ -1,23 +1,27 @@
 package com.rapidticket.show.model;
 
 import com.rapidticket.show.utils.enums.EnumCurrency;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.io.Serializable;
+import java.sql.Timestamp;
 import lombok.ToString;
-
-import java.util.Date;
+import java.io.Serial;
+import lombok.Getter;
+import lombok.Setter;
 
 @Setter
 @Getter
 @ToString
 @NoArgsConstructor
-public class Function {
+public class Function implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private String id;
     private String code;
-    private String showId;
-    private String venueId;
-    private Date date;
+    private Show show;
+    private Venue venue;
+    private Timestamp date;
     private double basePrice;
     private EnumCurrency currency;
 }

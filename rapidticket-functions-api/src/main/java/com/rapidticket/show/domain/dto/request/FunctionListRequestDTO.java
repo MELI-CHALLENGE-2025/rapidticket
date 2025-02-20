@@ -2,13 +2,18 @@ package com.rapidticket.show.domain.dto.request;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.io.Serializable;
+import java.io.Serial;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class FunctionListRequestDTO {
+public class FunctionListRequestDTO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Size(min = 1, max = 50, message = "The code must be between 1 and 50 characters.")
     private String code;
@@ -25,7 +30,7 @@ public class FunctionListRequestDTO {
     @DecimalMin(value = "0.0", inclusive = false, message = "The maxBasePrice must be greater than 0.")
     private Double maxBasePrice;
 
-    @Size(min = 1, max = 3, message = "The currency must be a valid ISO 4217 currency code (1 to 3 characters).")
+    @Pattern(regexp = "^(USD)$", message = "Currency must be 'USD' as per the supported values.")
     private String currency;
 
     @Min(value = 1, message = "The page must be greater than or equal to 1.")
