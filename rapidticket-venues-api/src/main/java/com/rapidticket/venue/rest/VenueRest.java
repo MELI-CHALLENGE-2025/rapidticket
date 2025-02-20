@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import com.rapidticket.venue.business.VenueBusiness;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import com.rapidticket.venue.domain.dto.VenueDTO;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,7 +41,10 @@ public class VenueRest {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Response<Void> create(@Valid @RequestBody VenueDTO dto) {
+    public Response<Void> create(
+            @Valid @RequestBody VenueDTO dto,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader
+    ) {
         return this.venueBusiness.create(dto);
     }
 

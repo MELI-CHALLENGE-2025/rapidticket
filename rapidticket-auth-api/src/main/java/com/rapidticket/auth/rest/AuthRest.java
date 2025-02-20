@@ -2,7 +2,6 @@ package com.rapidticket.auth.rest;
 
 import com.rapidticket.auth.domain.dto.response.LoginResponseDTO;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import com.rapidticket.auth.domain.dto.request.RegisterDTO;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import com.rapidticket.auth.domain.dto.request.LoginDTO;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -41,20 +40,4 @@ public class AuthRest {
         return authBusiness.login(dto);
     }
 
-    /**
-     * Register a new user.
-     *
-     * @param dto The user registration data.
-     * @return No content if registration is successful.
-     */
-    @Operation(summary = "Register a new user", description = "Creates a new user in the system.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User registered successfully", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Response<Void> register(@Valid @RequestBody RegisterDTO dto) {
-        return authBusiness.register(dto);
-    }
 }
