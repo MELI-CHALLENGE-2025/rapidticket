@@ -1,6 +1,6 @@
 package com.rapidticket.register.validations;
 
-import static com.rapidticket.register.utils.RegisterConstantMessages.*;
+import static com.rapidticket.register.utils.messages.RegisterConstantMessages.*;
 
 import com.rapidticket.register.exception.CustomException;
 import org.springframework.stereotype.Component;

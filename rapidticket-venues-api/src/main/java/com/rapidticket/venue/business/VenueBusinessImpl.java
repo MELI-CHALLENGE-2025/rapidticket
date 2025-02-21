@@ -1,7 +1,7 @@
 package com.rapidticket.venue.business;
 
-import static com.rapidticket.venue.utils.ConstantMessages.*;
-import static com.rapidticket.venue.utils.VenueConstantMessages.*;
+import static com.rapidticket.venue.utils.messages.ConstantMessages.*;
+import static com.rapidticket.venue.utils.messages.VenueConstantMessages.*;
 
 import com.rapidticket.venue.domain.dto.request.VenueUpdateRequestDTO;
 import com.rapidticket.venue.domain.dto.request.VenueListRequestDTO;

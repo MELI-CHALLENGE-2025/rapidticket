@@ -6,7 +6,7 @@ import lombok.ToString;
 import lombok.Getter;
 import lombok.Setter;
 
-import static com.rapidticket.auth.utils.ConstantMessages.*;
+import static com.rapidticket.auth.utils.messages.ConstantMessages.*;
 
 @Getter
 @Setter

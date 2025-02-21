@@ -1,6 +1,6 @@
 package com.rapidticket.function.validations;
 
-import static com.rapidticket.function.utils.FunctionConstantMessages.*;
+import static com.rapidticket.function.utils.messages.FunctionConstantMessages.*;
 import com.rapidticket.function.exception.CustomException;
 import org.springframework.stereotype.Component;
 import org.springframework.http.HttpStatus;

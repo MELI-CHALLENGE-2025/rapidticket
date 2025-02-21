@@ -4,7 +4,7 @@ import com.rapidticket.function.exception.CustomException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import static com.rapidticket.function.utils.VenueConstantMessages.*;
+import static com.rapidticket.function.utils.messages.VenueConstantMessages.*;
 
 
 @Component

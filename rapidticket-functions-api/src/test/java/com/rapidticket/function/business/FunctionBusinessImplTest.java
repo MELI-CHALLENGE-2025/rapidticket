@@ -4,23 +4,26 @@ import com.rapidticket.function.domain.dto.request.FunctionCreateRequestDTO;
 import com.rapidticket.function.domain.dto.request.FunctionUpdateRequestDTO;
 import com.rapidticket.function.domain.dto.response.FunctionListResponseDTO;
 import com.rapidticket.function.domain.dto.request.FunctionListRequestDTO;
+import com.rapidticket.function.utils.messages.FunctionConstantMessages;
+import com.rapidticket.function.utils.messages.VenueConstantMessages;
+import com.rapidticket.function.utils.messages.ShowConstantMessages;
+import com.rapidticket.function.utils.messages.ConstantMessages;
 import com.rapidticket.function.repository.FunctionRepository;
-import com.rapidticket.function.repository.ShowRepository;
+import org.springframework.test.context.ContextConfiguration;
 import com.rapidticket.function.repository.VenueRepository;
-import com.rapidticket.function.utils.ConstantMessages;
-import com.rapidticket.function.utils.FunctionConstantMessages;
-import com.rapidticket.function.utils.ShowConstantMessages;
-import com.rapidticket.function.utils.VenueConstantMessages;
+import com.rapidticket.function.repository.ShowRepository;
+import org.springframework.test.context.TestPropertySource;
 import com.rapidticket.function.utils.enums.EnumCurrency;
+import com.rapidticket.function.domain.dto.FunctionDTO;
+import com.rapidticket.function.FunctionApplication;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import com.rapidticket.function.domain.dto.FunctionDTO;
 import com.rapidticket.function.response.Response;
-import org.springframework.http.HttpStatus;
 import com.rapidticket.function.model.Function;
-import org.junit.jupiter.api.BeforeEach;
 import com.rapidticket.function.model.Venue;
+import org.springframework.http.HttpStatus;
 import com.rapidticket.function.model.Show;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
@@ -35,6 +38,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@ContextConfiguration(classes = FunctionApplication.class)
+@TestPropertySource(locations = "classpath:application-test.properties")
 class FunctionBusinessImplTest {
     private static final String ID_FUNCTION = "11111111-1111-1111-1111-111111111111";
     private static final String ID_SHOW = "11111111-1111-1111-1111-111111111111";

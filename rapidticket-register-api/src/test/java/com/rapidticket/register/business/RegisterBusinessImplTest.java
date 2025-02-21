@@ -1,21 +1,24 @@
 package com.rapidticket.register.business;
 
+import com.rapidticket.register.RegisterApplication;
 import com.rapidticket.register.domain.dto.request.RegisterDTO;
 import com.rapidticket.register.repository.UserRepository;
 import com.rapidticket.register.utils.enums.EnumRoleUser;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.rapidticket.register.response.Response;
-import com.rapidticket.register.utils.CryptoUtils;
+import com.rapidticket.register.utils.security.CryptoUtils;
 import org.springframework.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import com.rapidticket.register.model.User;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 
-import static com.rapidticket.register.utils.ConstantMessages.DEM000;
-import static com.rapidticket.register.utils.ConstantMessages.UEM000;
-import static com.rapidticket.register.utils.RegisterConstantMessages.*;
+import static com.rapidticket.register.utils.messages.ConstantMessages.DEM000;
+import static com.rapidticket.register.utils.messages.ConstantMessages.UEM000;
+import static com.rapidticket.register.utils.messages.RegisterConstantMessages.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -23,6 +26,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@ContextConfiguration(classes = RegisterApplication.class)
+@TestPropertySource(locations = "classpath:application-test.properties")
 class RegisterBusinessImplTest {
     private static final String ID_USER = "11111111-1111-1111-1111-111111111111";
     private static final String FULL_NAME = "full_name";

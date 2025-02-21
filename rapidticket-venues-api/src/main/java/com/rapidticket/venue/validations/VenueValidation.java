@@ -1,6 +1,6 @@
 package com.rapidticket.venue.validations;
 
-import static com.rapidticket.venue.utils.VenueConstantMessages.*;
+import static com.rapidticket.venue.utils.messages.VenueConstantMessages.*;
 import com.rapidticket.venue.exception.CustomException;
 import org.springframework.stereotype.Component;
 import org.springframework.http.HttpStatus;

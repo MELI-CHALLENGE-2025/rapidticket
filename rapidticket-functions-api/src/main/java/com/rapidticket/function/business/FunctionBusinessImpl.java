@@ -1,7 +1,7 @@
 package com.rapidticket.function.business;
 
-import static com.rapidticket.function.utils.ConstantMessages.*;
-import static com.rapidticket.function.utils.FunctionConstantMessages.*;
+import static com.rapidticket.function.utils.messages.ConstantMessages.*;
+import static com.rapidticket.function.utils.messages.FunctionConstantMessages.*;
 
 import com.rapidticket.function.domain.dto.request.FunctionCreateRequestDTO;
 import com.rapidticket.function.domain.dto.response.FunctionListResponseDTO;

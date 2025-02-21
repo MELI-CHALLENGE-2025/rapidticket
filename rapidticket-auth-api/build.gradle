@@ -2,7 +2,6 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.2'
 	id 'io.spring.dependency-management' version '1.1.7'
-	id 'org.sonarqube' version '4.4.1.3373'
 	id 'jacoco'
 }
 
@@ -59,17 +58,6 @@ tasks.named('test') {
 
 jacoco {
 	toolVersion = "0.8.11"
-}
-
-sonar {
-	properties {
-		property "sonar.projectKey", "com.rapidticket:show"
-		property "sonar.projectName", "RapidTicket Show Service"
-		property "sonar.host.url", "http://localhost:9000"
-		property "sonar.login", "sqa_b18456ae3dd075f2c7728e733a23198227fa5e8f"
-		property "sonar.coverage.jacoco.xmlReportPaths", "$buildDir/reports/jacoco/test/jacocoTestReport.xml"
-		property "sonar.qualitygate.wait", true
-	}
 }
 
 tasks.jacocoTestReport {

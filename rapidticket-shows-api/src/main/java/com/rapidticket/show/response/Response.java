@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
-import static com.rapidticket.show.utils.ShowConstantMessages.*;
-import static com.rapidticket.show.utils.ConstantMessages.EMPTY_STRING;
+import static com.rapidticket.show.utils.messages.ShowConstantMessages.*;
+import static com.rapidticket.show.utils.messages.ConstantMessages.EMPTY_STRING;
 
 @Getter
 @Setter

@@ -1,13 +1,17 @@
 package com.rapidticket.auth.business;
 
+import com.rapidticket.auth.AuthApplication;
 import com.rapidticket.auth.domain.dto.response.LoginResponseDTO;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import com.rapidticket.auth.utils.security.JwtTokenUtils;
 import com.rapidticket.auth.domain.dto.request.LoginDTO;
+import com.rapidticket.auth.utils.security.CryptoUtils;
 import com.rapidticket.auth.repository.UserRepository;
 import com.rapidticket.auth.utils.enums.EnumRoleUser;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.rapidticket.auth.response.Response;
-import com.rapidticket.auth.utils.CryptoUtils;
 import org.springframework.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import com.rapidticket.auth.model.User;
@@ -16,16 +20,19 @@ import org.mockito.*;
 
 import java.util.Optional;
 
-import static com.rapidticket.auth.utils.ConstantMessages.DEM000;
-import static com.rapidticket.auth.utils.ConstantMessages.UEM000;
-import static com.rapidticket.auth.utils.AuthConstantMessages.*;
+import static com.rapidticket.auth.utils.messages.AuthConstantMessages.*;
+import static com.rapidticket.auth.utils.messages.ConstantMessages.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@ContextConfiguration(classes = AuthApplication.class)
+@TestPropertySource(locations = "classpath:application-test.properties")
 class AuthBusinessImplTest {
+    private static final String TOKEN = "token";
     private static final String ID_USER = "11111111-1111-1111-1111-111111111111";
     private static final String FULL_NAME = "full_name";
     private static final String EMAIL = "test@test.com";
@@ -36,6 +43,8 @@ class AuthBusinessImplTest {
     private UserRepository userRepository;
     @Mock
     private CryptoUtils cryptoUtils;
+    @Mock
+    private JwtTokenUtils jwtTokenUtils;
 
     @InjectMocks
     private AuthBusinessImpl authBusiness;
@@ -61,6 +70,8 @@ class AuthBusinessImplTest {
     void loginSuccess() {
         when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.cryptoUtils.verifyPassword(anyString(), anyString())).thenReturn(true);
+        when(this.jwtTokenUtils.generateToken(anyString(), anyList())).thenReturn(TOKEN);
+
         Response<LoginResponseDTO> response = this.authBusiness.login(loginDto);
 
         assertNotNull(response);

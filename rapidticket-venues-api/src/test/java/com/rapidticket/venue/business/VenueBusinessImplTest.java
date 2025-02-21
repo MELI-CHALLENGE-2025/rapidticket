@@ -1,5 +1,6 @@
 package com.rapidticket.venue.business;
 
+import com.rapidticket.venue.VenueApplication;
 import com.rapidticket.venue.business.VenueBusinessImpl;
 import com.rapidticket.venue.domain.dto.request.VenueUpdateRequestDTO;
 import com.rapidticket.venue.domain.dto.request.VenueListRequestDTO;
@@ -13,20 +14,24 @@ import com.rapidticket.venue.model.Venue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.rapidticket.venue.utils.ConstantMessages.DEM000;
-import static com.rapidticket.venue.utils.ConstantMessages.UEM000;
-import static com.rapidticket.venue.utils.VenueConstantMessages.*;
+import static com.rapidticket.venue.utils.messages.ConstantMessages.DEM000;
+import static com.rapidticket.venue.utils.messages.ConstantMessages.UEM000;
+import static com.rapidticket.venue.utils.messages.VenueConstantMessages.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@ContextConfiguration(classes = VenueApplication.class)
+@TestPropertySource(locations = "classpath:application-test.properties")
 class VenueBusinessImplTest {
     private static final String ID_VENUE = "11111111-1111-1111-1111-111111111111";
     private static final String CODE_VENUE = "MOCKED01";

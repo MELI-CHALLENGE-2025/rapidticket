@@ -1,4 +1,5 @@
 version: "3.8"
+
 services:
   postgres:
     image: postgres:latest
@@ -14,6 +15,86 @@ services:
     volumes:
       - ./docs/db/001-schema.sql:/docker-entrypoint-initdb.d/001-schema.sql
       - ./docs/db/002-data.sql:/docker-entrypoint-initdb.d/002-data.sql
+
+  auth-api:
+    build:
+      context: ./rapidticket-auth-api
+      dockerfile: Dockerfile
+    container_name: auth-api
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/rapidticket_local
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      - postgres
+    ports:
+      - "8084:8084"
+    networks:
+      - rapidticket-network
+
+  register-api:
+    build:
+      context: ./rapidticket-register-api
+      dockerfile: Dockerfile
+    container_name: register-api
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/rapidticket_local
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      - postgres
+    ports:
+      - "8085:8085"
+    networks:
+      - rapidticket-network
+
+  shows-api:
+    build:
+      context: ./rapidticket-shows-api
+      dockerfile: Dockerfile
+    container_name: shows-api
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/rapidticket_local
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      - postgres
+    ports:
+      - "8083:8083"
+    networks:
+      - rapidticket-network
+
+  functions-api:
+    build:
+      context: ./rapidticket-functions-api
+      dockerfile: Dockerfile
+    container_name: functions-api
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/rapidticket_local
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      - postgres
+    ports:
+      - "8081:8081"
+    networks:
+      - rapidticket-network
+
+  venues-api:
+    build:
+      context: ./rapidticket-venues-api
+      dockerfile: Dockerfile
+    container_name: venues-api
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/rapidticket_local
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      - postgres
+    ports:
+      - "8082:8082"
+    networks:
+      - rapidticket-network
 
 networks:
   rapidticket-network:

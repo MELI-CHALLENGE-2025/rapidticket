@@ -1,7 +1,7 @@
 package com.rapidticket.register.business;
 
-import static com.rapidticket.register.utils.RegisterConstantMessages.*;
-import static com.rapidticket.register.utils.ConstantMessages.*;
+import static com.rapidticket.register.utils.messages.RegisterConstantMessages.*;
+import static com.rapidticket.register.utils.messages.ConstantMessages.*;
 
 import com.rapidticket.register.domain.dto.request.RegisterDTO;
 import com.rapidticket.register.domain.mapper.RegisterMapper;
@@ -9,7 +9,7 @@ import com.rapidticket.register.validations.RegisterValidation;
 import com.rapidticket.register.exception.CustomException;
 import com.rapidticket.register.repository.UserRepository;
 import com.rapidticket.register.response.Response;
-import com.rapidticket.register.utils.CryptoUtils;
+import com.rapidticket.register.utils.security.CryptoUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.http.HttpStatus;
 import lombok.RequiredArgsConstructor;

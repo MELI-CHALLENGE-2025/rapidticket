@@ -1,6 +1,6 @@
 package com.rapidticket.auth.validations;
 
-import static com.rapidticket.auth.utils.AuthConstantMessages.*;
+import static com.rapidticket.auth.utils.messages.AuthConstantMessages.*;
 
 import com.rapidticket.auth.exception.CustomException;
 import org.springframework.stereotype.Component;

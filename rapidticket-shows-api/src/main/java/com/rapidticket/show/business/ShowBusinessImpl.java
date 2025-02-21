@@ -1,7 +1,7 @@
 package com.rapidticket.show.business;
 
-import static com.rapidticket.show.utils.ShowConstantMessages.*;
-import static com.rapidticket.show.utils.ConstantMessages.*;
+import static com.rapidticket.show.utils.messages.ShowConstantMessages.*;
+import static com.rapidticket.show.utils.messages.ConstantMessages.*;
 
 import com.rapidticket.show.domain.dto.request.ShowListRequestDTO;
 import com.rapidticket.show.domain.dto.request.ShowUpdateRequestDTO;

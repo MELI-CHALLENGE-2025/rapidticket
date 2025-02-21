@@ -7,7 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.context.annotation.Configuration;
-import com.rapidticket.venue.utils.JwtAuthenticationFilter;
+import com.rapidticket.venue.utils.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import lombok.AllArgsConstructor;
 

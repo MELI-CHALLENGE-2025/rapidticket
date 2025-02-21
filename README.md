@@ -109,13 +109,6 @@ Use **JUnit** for unit and integration testing:
 ./gradlew test
 ```
 
-```bash
-./rapidticket-shows-api/gradlew test
-```  
-```bash
-./rapidticket-venues-api/gradlew test
-```  
-
 ---  
 
 ## Instructions for Running Locally 🖥️
@@ -140,6 +133,65 @@ Use **JUnit** for unit and integration testing:
    ```
 
 ---
+
+## Project Structure
+
+```
+rapidticket/
+│── rapidticket-auth-api/       # Authentication Service
+│── rapidticket-functions-api/  # Event Functions Service
+│── rapidticket-register-api/   # User Registration Service
+│── rapidticket-shows-api/      # Event Management Service
+│── rapidticket-venues-api/     # Venue Management Service
+│── k8s/                        # Kubernetes Deployment Files
+│── docs/                       # API Documentation
+│── docker-compose.yml          # Docker Compose Configuration
+│── gradlew                     # Gradle Wrapper
+│── LICENSE                     # License File
+│── README.md                   # Documentation
+```
+
+## Running the Services
+
+### Running with Docker Compose
+To run all services using Docker:
+```sh
+docker-compose up --build
+```
+
+### Running Individually
+To run a specific service (e.g., `rapidticket-auth-api`):
+```sh
+cd rapidticket-auth-api
+./gradlew bootRun
+```
+
+## API Documentation
+Each microservice exposes its APIs using **Swagger**. Once the services are running, you can access:
+
+- **Authentication API** → `http://localhost:8084/api/v1/swagger-ui.html`
+- **User Registration API** → `http://localhost:8085/api/v1/swagger-ui.html`
+- **Function Management API** → `http://localhost:8083/api/v1/swagger-ui.html`
+- **Venue Management API** → `http://localhost:8082/api/v1/swagger-ui.html`
+- **Show Management API** → `http://localhost:8081/api/v1/swagger-ui.html`
+
+## Deployment
+
+### Kubernetes Deployment
+To deploy the services to Kubernetes:
+```sh
+kubectl apply -f k8s/
+```
+
+### Deploying to AWS (Example)
+Using AWS Elastic Kubernetes Service (EKS):
+```sh
+aws eks --region your-region update-kubeconfig --name your-cluster
+kubectl apply -f k8s/
+```
+
+
+
 
 ## Contribution Guidelines 👐
 
