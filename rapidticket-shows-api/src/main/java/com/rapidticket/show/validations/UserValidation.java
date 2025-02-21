@@ -1,0 +1,22 @@
+package com.rapidticket.show.validations;
+
+import com.rapidticket.show.exception.CustomException;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+
+import static com.rapidticket.show.utils.messages.UserConstantMessages.DEM001;
+import static com.rapidticket.show.utils.messages.UserConstantMessages.UEM001;
+
+
+@Component
+public class UserValidation {
+    private UserValidation() {
+
+    }
+
+    public static void isNull(boolean isNull) throws CustomException {
+        if (isNull) {
+            throw new CustomException(DEM001, UEM001, HttpStatus.BAD_REQUEST.value(), null);
+        }
+    }
+}

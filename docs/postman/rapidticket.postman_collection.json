@@ -1,0 +1,629 @@
+{
+	"info": {
+		"_postman_id": "d3311168-b31b-4306-9a6f-f967767547fe",
+		"name": "rapidticket",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41959408"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"full_name\",\r\n    \"email\": \"test1@gmail.com\",\r\n    \"password\": \"password\",\r\n    \"role\": \"ADMIN\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_register}}",
+							"host": [
+								"{{url_register}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"authorization\", jsonData.data.token);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test1@gmail.com\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_auth}}/login",
+							"host": [
+								"{{url_auth}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Shows",
+			"item": [
+				{
+					"name": "/shows",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"code\": \"SHOW18\",\r\n    \"name\": \"The Great Show\",\r\n    \"description\": \"An amazing performance that you can't miss!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_shows}}",
+							"host": [
+								"{{url_shows}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/shows",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_shows}}?size=10&page=1",
+							"host": [
+								"{{url_shows}}"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "code",
+									"value": "SHOW16",
+									"disabled": true
+								},
+								{
+									"key": "name",
+									"value": "the",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/shows/{code}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_shows}}/SH003",
+							"host": [
+								"{{url_shows}}"
+							],
+							"path": [
+								"SH003"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/shows/{code}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"the Great Show\",\r\n    \"description\": \"an amazing performance that you can't miss!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_shows}}/SHOW18",
+							"host": [
+								"{{url_shows}}"
+							],
+							"path": [
+								"SHOW18"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/shows/{code}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_shows}}/SHOW18",
+							"host": [
+								"{{url_shows}}"
+							],
+							"path": [
+								"SHOW18"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Venues",
+			"item": [
+				{
+					"name": "/venues",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"code\": \"VENUE1\",\r\n    \"name\": \"Theatre Hall A\",\r\n    \"location\": \"123 Main St, City, Country\",\r\n    \"capacity\": 300\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_venues}}",
+							"host": [
+								"{{url_venues}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/venues",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_venues}}?size=10&page=1",
+							"host": [
+								"{{url_venues}}"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "code",
+									"value": "VENUE1",
+									"disabled": true
+								},
+								{
+									"key": "minCapacity",
+									"value": "300",
+									"disabled": true
+								},
+								{
+									"key": "maxCapacity",
+									"value": "300",
+									"disabled": true
+								},
+								{
+									"key": "location",
+									"value": "123 Main St",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/venues/{code}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_venues}}/VENUE1",
+							"host": [
+								"{{url_venues}}"
+							],
+							"path": [
+								"VENUE1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/venues/{code}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Theatre Hall A\",\r\n    \"location\": \"123 Main St, City, Country\",\r\n    \"capacity\": 301\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_venues}}/VENUE1",
+							"host": [
+								"{{url_venues}}"
+							],
+							"path": [
+								"VENUE1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/venues/{code}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_venues}}/VENUE1",
+							"host": [
+								"{{url_venues}}"
+							],
+							"path": [
+								"VENUE1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Functions",
+			"item": [
+				{
+					"name": "/functions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"code\": \"FN005\",\r\n    \"showCode\": \"SH003\",\r\n    \"venueCode\": \"VENUE1\",\r\n    \"date\": \"2025-03-10T16:30:00.000+00:00\",\r\n    \"basePrice\": 20.5,\r\n    \"currency\": \"USD\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_functions}}",
+							"host": [
+								"{{url_functions}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/functions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_functions}}?size=10&page=1",
+							"host": [
+								"{{url_functions}}"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "code",
+									"value": "FN001",
+									"disabled": true
+								},
+								{
+									"key": "minBasePrice",
+									"value": "51",
+									"disabled": true
+								},
+								{
+									"key": "maxBasePrice",
+									"value": "300",
+									"disabled": true
+								},
+								{
+									"key": "currency",
+									"value": "USD",
+									"disabled": true
+								},
+								{
+									"key": "showCode",
+									"value": "SH002",
+									"disabled": true
+								},
+								{
+									"key": "venueCode",
+									"value": "VN001",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/functions/{code}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_functions}}/FN004",
+							"host": [
+								"{{url_functions}}"
+							],
+							"path": [
+								"FN004"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/functions/{code}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"code\": \"FN005\",\r\n    \"showCode\": \"SH003\",\r\n    \"venueCode\": \"VENUE1\",\r\n    \"date\": \"2025-03-10T16:30:00.000+00:00\",\r\n    \"basePrice\": 20.5,\r\n    \"currency\": \"USD\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_functions}}/FN004",
+							"host": [
+								"{{url_functions}}"
+							],
+							"path": [
+								"FN004"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/functions/{code}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_functions}}/FN001",
+							"host": [
+								"{{url_functions}}"
+							],
+							"path": [
+								"FN001"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
