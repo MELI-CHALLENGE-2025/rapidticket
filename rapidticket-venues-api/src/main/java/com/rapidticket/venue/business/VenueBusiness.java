@@ -8,9 +8,9 @@ import com.rapidticket.venue.response.Response;
 import java.util.List;
 
 public interface VenueBusiness {
-    Response<Void> updateWithCode(String code, VenueUpdateRequestDTO dto);
-    Response<List<VenueDTO>> listAllWithFilters(VenueListRequestDTO dto);
-    Response<VenueDTO> searchByCode(String code);
-    Response<Void> deleteWithCode(String code);
-    Response<Void> create(VenueDTO dto);
+    Response<Void> updateWithCode(String code, VenueUpdateRequestDTO dto, String subject);
+    Response<List<VenueDTO>> listAllWithFilters(VenueListRequestDTO dto, String subject);
+    Response<VenueDTO> searchByCode(String code, String subject);
+    Response<Void> deleteWithCode(String code, String subject);
+    Response<Void> create(VenueDTO dto, String subject);
 }

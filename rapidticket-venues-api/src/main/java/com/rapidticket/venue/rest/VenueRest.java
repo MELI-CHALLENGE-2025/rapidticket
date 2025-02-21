@@ -8,6 +8,7 @@ import com.rapidticket.venue.business.VenueBusiness;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import com.rapidticket.venue.domain.dto.VenueDTO;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -45,7 +46,8 @@ public class VenueRest {
             @Valid @RequestBody VenueDTO dto,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader
     ) {
-        return this.venueBusiness.create(dto);
+        String subject = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.venueBusiness.create(dto, subject);
     }
 
     /**
@@ -61,23 +63,10 @@ public class VenueRest {
     })
     @GetMapping
     public Response<List<VenueDTO>> listAllWithFilters(
-            @RequestParam(required = false) String code,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) Integer minCapacity,
-            @RequestParam(required = false) Integer maxCapacity,
-            @RequestParam(required = false) String location,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
+            @Valid @ModelAttribute VenueListRequestDTO dto
     ) {
-        VenueListRequestDTO dto = new VenueListRequestDTO();
-        dto.setName(name);
-        dto.setCode(code);
-        dto.setMinCapacity(minCapacity);
-        dto.setMaxCapacity(maxCapacity);
-        dto.setPage(page);
-        dto.setSize(size);
-
-        return this.venueBusiness.listAllWithFilters(dto);
+        String subject = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.venueBusiness.listAllWithFilters(dto, subject);
     }
 
     /**
@@ -97,7 +86,8 @@ public class VenueRest {
     public Response<VenueDTO> searchByCode(
             @Parameter(description = "Unique code of the venue", required = true)
             @PathVariable String code) {
-        return this.venueBusiness.searchByCode(code);
+        String subject = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.venueBusiness.searchByCode(code, subject);
     }
 
     /**
@@ -119,7 +109,8 @@ public class VenueRest {
             @Parameter(description = "Unique code of the venue", required = true)
             @PathVariable String code,
             @Valid @RequestBody VenueUpdateRequestDTO dto) {
-        return this.venueBusiness.updateWithCode(code, dto);
+        String subject = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.venueBusiness.updateWithCode(code, dto, subject);
     }
 
     /**
@@ -138,6 +129,7 @@ public class VenueRest {
     public Response<Void> deleteWithCode(
             @Parameter(description = "Unique code of the venue", required = true)
             @PathVariable String code) {
-        return this.venueBusiness.deleteWithCode(code);
+        String subject = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.venueBusiness.deleteWithCode(code, subject);
     }
 }

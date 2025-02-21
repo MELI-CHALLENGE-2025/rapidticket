@@ -12,5 +12,5 @@ public interface FunctionRepository {
     Optional<Function> findByCode(String code);
     boolean existsByCode(String code);
     boolean delete(String code);
-    String create(String showId, String venueId, Function entity);
+    String create(String showId, String venueId, Function entity, String userId);
 }

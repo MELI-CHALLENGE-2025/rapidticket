@@ -11,5 +11,5 @@ public interface VenueRepository {
     Optional<Venue> findByCode(String code);
     boolean existsByCode(String code);
     boolean delete(String code);
-    String create(Venue entity);
+    String create(Venue entity, String userId);
 }

@@ -1,5 +1,6 @@
 package com.rapidticket.venue.repository;
 
+import com.rapidticket.venue.model.User;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -21,18 +22,20 @@ public class VenueRepositoryImpl implements VenueRepository {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public String create(Venue venue) {
+    public String create(Venue venue, String userId) {
         try {
             UUID uuid = UUID.randomUUID();
-            String sql = "INSERT INTO venues (id, code, name, capacity, location) " +
-                    "VALUES (:id, :code, :name, :capacity, :location)";
+            String sql = "INSERT INTO venues (id, code, name, capacity, location, created_by) " +
+                    "VALUES (:id, :code, :name, :capacity, :location, :createdBy)";
 
             MapSqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("id", uuid.toString())
+                    .addValue("id", uuid)
                     .addValue("code", venue.getCode())
                     .addValue("name", venue.getName())
                     .addValue(CAPACITY, venue.getCapacity())
-                    .addValue(LOCATION, venue.getLocation());
+                    .addValue(LOCATION, venue.getLocation())
+                    .addValue("createdBy", UUID.fromString(userId));
+
 
             int rowsAffected = namedParameterJdbcTemplate.update(sql, params);
             return rowsAffected > 0 ? uuid.toString() : null;
@@ -60,35 +63,45 @@ public class VenueRepositoryImpl implements VenueRepository {
         try {
             int offset = (page - 1) * size;
 
-            StringBuilder sql = new StringBuilder("SELECT id, code, name, location, capacity, created_at FROM venues WHERE 1=1 ");
+            StringBuilder sql = new StringBuilder(
+                    """
+                    SELECT
+                        v.id AS venue_id, v.code AS venue_code, v.name AS venue_name, v.capacity AS venue_capacity, v.location AS venue_location,
+                        u.id AS user_id, u.email AS user_email, u.full_name AS user_full_name
+                    FROM venues v
+                    JOIN users u ON v.created_by = u.id
+                    WHERE 1=1
+                    """
+            );
+
             MapSqlParameterSource params = new MapSqlParameterSource();
 
             if (code != null && !code.isEmpty()) {
-                sql.append("AND code LIKE :code ");
+                sql.append("AND v.code LIKE :code ");
                 params.addValue("code", "%" + code + "%");
             }
 
             if (name != null && !name.isEmpty()) {
-                sql.append("AND name LIKE :name ");
+                sql.append("AND v.name LIKE :name ");
                 params.addValue("name", "%" + name + "%");
             }
 
             if (location != null && !location.isEmpty()) {
-                sql.append("AND location LIKE :location ");
-                params.addValue(LOCATION, "%" + location + "%");
+                sql.append("AND v.location LIKE :location ");
+                params.addValue("venue_location", "%" + location + "%");
             }
 
             if (minCapacity != null) {
-                sql.append("AND capacity >= :minCapacity ");
+                sql.append("AND v.capacity >= :minCapacity ");
                 params.addValue("minCapacity", minCapacity);
             }
 
             if (maxCapacity != null) {
-                sql.append("AND capacity <= :maxCapacity ");
+                sql.append("AND v.capacity <= :maxCapacity ");
                 params.addValue("maxCapacity", maxCapacity);
             }
 
-            sql.append("ORDER BY created_at ASC LIMIT :size OFFSET :offset");
+            sql.append("ORDER BY v.created_at ASC LIMIT :size OFFSET :offset");
             params.addValue("size", size);
             params.addValue("offset", offset);
 
@@ -102,7 +115,15 @@ public class VenueRepositoryImpl implements VenueRepository {
     @Override
     public Optional<Venue> findByCode(String code) {
         try {
-            String sql = "SELECT * FROM venues WHERE code = :code";
+            String sql =
+                """
+                SELECT
+                    v.id AS venue_id, v.code AS venue_code, v.name AS venue_name, v.capacity AS venue_capacity, v.location AS venue_location,
+                    u.id AS user_id, u.email AS user_email, u.full_name AS user_full_name
+                FROM venues v
+                JOIN users u ON v.created_by = u.id
+                WHERE v.code = :code
+                """;
             SqlParameterSource params = new MapSqlParameterSource("code", code);
             List<Venue> venues = namedParameterJdbcTemplate.query(sql, params, mapper);
 
@@ -150,12 +171,19 @@ public class VenueRepositoryImpl implements VenueRepository {
     }
 
     private final RowMapper<Venue> mapper = (rs, rowNum) -> {
+        User user = new User();
+        user.setId(rs.getString("user_id"));
+        user.setEmail(rs.getString("user_email"));
+        user.setFullName(rs.getString("user_full_name"));
+
         Venue venue = new Venue();
-        venue.setId(rs.getString("id"));
-        venue.setCode(rs.getString("code"));
-        venue.setName(rs.getString("name"));
-        venue.setCapacity(rs.getInt(CAPACITY));
-        venue.setLocation(rs.getString(LOCATION));
+        venue.setId(rs.getString("venue_id"));
+        venue.setCode(rs.getString("venue_code"));
+        venue.setName(rs.getString("venue_name"));
+        venue.setCapacity(rs.getInt("venue_capacity"));
+        venue.setLocation(rs.getString("venue_location"));
+        venue.setCreatedBy(user);
+
         return venue;
     };
 }

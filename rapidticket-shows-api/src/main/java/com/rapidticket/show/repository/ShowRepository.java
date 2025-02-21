@@ -9,6 +9,6 @@ public interface ShowRepository {
     Optional<Show> findByCode(String code);
     boolean existsByCode(String code);
     boolean delete(String code);
-    String create(Show entity);
+    String create(Show entity, String userId);
     List<Show> findAllWithFilters(String code, String name, int page, int size);
 }

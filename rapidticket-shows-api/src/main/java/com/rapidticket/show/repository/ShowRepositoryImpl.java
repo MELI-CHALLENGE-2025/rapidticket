@@ -1,5 +1,7 @@
 package com.rapidticket.show.repository;
 
+import com.rapidticket.show.model.User;
+import com.rapidticket.show.utils.enums.EnumRoleUser;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -17,20 +19,19 @@ import java.util.UUID;
 @Repository
 @RequiredArgsConstructor
 public class ShowRepositoryImpl implements ShowRepository {
-    private static final String DESCRIPTION = "description";
-
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public String create(Show show) {
+    public String create(Show show, String userId) {
         try {
             UUID uuid = UUID.randomUUID();
-            String sql = "INSERT INTO shows (id, code, name, description) VALUES (:id, :code, :name, :description)";
+            String sql = "INSERT INTO shows (id, code, name, description, created_by) VALUES (:id, :code, :name, :description, :createdBy)";
             MapSqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("id", uuid.toString())
+                    .addValue("id", uuid)
                     .addValue("code", show.getCode())
                     .addValue("name", show.getName())
-                    .addValue(DESCRIPTION, show.getDescription());
+                    .addValue("description", show.getDescription())
+                    .addValue("createdBy", UUID.fromString(userId));
 
             int rowsAffected = namedParameterJdbcTemplate.update(sql, params);
             return rowsAffected > 0 ? uuid.toString() : null;
@@ -45,24 +46,34 @@ public class ShowRepositoryImpl implements ShowRepository {
         try {
             int offset = (page - 1) * size;
 
-            String sql = "SELECT id, code, name, description, created_at FROM shows WHERE 1=1";
+            StringBuilder sql = new StringBuilder(
+                    """
+                    SELECT
+                        s.id AS show_id, s.code AS show_code, s.name AS show_name, s.description AS show_description,
+                        u.id AS user_id, u.email AS user_email, u.full_name AS user_full_name
+                    FROM shows s
+                    JOIN users u ON s.created_by = u.id
+                    WHERE 1=1
+                    """
+            );
+
             MapSqlParameterSource params = new MapSqlParameterSource();
 
             if (code != null && !code.isEmpty()) {
-                sql += " AND code LIKE :code";
+                sql.append(" AND s.code LIKE :code");
                 params.addValue("code", "%" + code + "%");
             }
 
             if (name != null && !name.isEmpty()) {
-                sql += " AND LOWER(name) LIKE LOWER(:name)";
+                sql.append(" AND LOWER(s.name) LIKE LOWER(:name)");
                 params.addValue("name", "%" + name + "%");
             }
 
-            sql += " ORDER BY created_at ASC LIMIT :size OFFSET :offset";
+            sql.append(" ORDER BY s.created_at ASC LIMIT :size OFFSET :offset");
             params.addValue("size", size);
             params.addValue("offset", offset);
 
-            return namedParameterJdbcTemplate.query(sql, params, mapper);
+            return namedParameterJdbcTemplate.query(sql.toString(), params, mapper);
         } catch (Exception e) {
             log.error("Error retrieving shows with filters: {}", e.getMessage(), e);
             return new ArrayList<>();
@@ -85,7 +96,15 @@ public class ShowRepositoryImpl implements ShowRepository {
     @Override
     public Optional<Show> findByCode(String code) {
         try {
-            String sql = "SELECT * FROM shows WHERE code = :code";
+            String sql =
+            """
+            SELECT
+                s.id AS show_id, s.code AS show_code, s.name AS show_name, s.description AS show_description,
+                u.id AS user_id, u.email AS user_email, u.full_name AS user_full_name
+            FROM shows s
+            JOIN users u ON s.created_by = u.id
+            WHERE s.code = :code
+            """;
             MapSqlParameterSource params = new MapSqlParameterSource("code", code);
             List<Show> shows = namedParameterJdbcTemplate.query(sql, params, mapper);
             return shows.isEmpty() ? Optional.empty() : Optional.of(shows.get(0));
@@ -101,7 +120,7 @@ public class ShowRepositoryImpl implements ShowRepository {
             String sql = "UPDATE shows SET name = :name, description = :description WHERE code = :code";
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("name", entity.getName())
-                    .addValue(DESCRIPTION, entity.getDescription())
+                    .addValue("description", entity.getDescription())
                     .addValue("code", code);
 
             int rowsAffected = namedParameterJdbcTemplate.update(sql, params);
@@ -126,11 +145,17 @@ public class ShowRepositoryImpl implements ShowRepository {
     }
 
     private final RowMapper<Show> mapper = (rs, rowNum) -> {
+        User user = new User();
+        user.setId(rs.getString("user_id"));
+        user.setEmail(rs.getString("user_email"));
+        user.setFullName(rs.getString("user_full_name"));
+
         Show show = new Show();
-        show.setId(rs.getString("id"));
-        show.setCode(rs.getString("code"));
-        show.setName(rs.getString("name"));
-        show.setDescription(rs.getString(DESCRIPTION));
+        show.setId(rs.getString("show_id"));
+        show.setCode(rs.getString("show_code"));
+        show.setName(rs.getString("show_name"));
+        show.setDescription(rs.getString("show_description"));
+        show.setCreatedBy(user);
         return show;
     };
 }

@@ -7,9 +7,12 @@ import com.rapidticket.function.domain.dto.request.FunctionCreateRequestDTO;
 import com.rapidticket.function.domain.dto.response.FunctionListResponseDTO;
 import com.rapidticket.function.domain.dto.request.FunctionUpdateRequestDTO;
 import com.rapidticket.function.domain.dto.request.FunctionListRequestDTO;
+import com.rapidticket.function.model.User;
+import com.rapidticket.function.repository.UserRepository;
 import com.rapidticket.function.validations.FunctionValidation;
 import com.rapidticket.function.repository.FunctionRepository;
 import com.rapidticket.function.domain.mapper.FunctionMapper;
+import com.rapidticket.function.validations.UserValidation;
 import com.rapidticket.function.validations.VenueValidation;
 import com.rapidticket.function.validations.ShowValidation;
 import com.rapidticket.function.repository.VenueRepository;
@@ -37,18 +40,21 @@ public class FunctionBusinessImpl implements FunctionBusiness {
     private final FunctionRepository functionRepository;
     private final ShowRepository showRepository;
     private final VenueRepository venueRepository;
+    private final UserRepository userRepository;
 
     @Override
-    public Response<Void> create(FunctionCreateRequestDTO dto) throws CustomException {
+    public Response<Void> create(FunctionCreateRequestDTO dto, String subject) throws CustomException {
         log.info("Starting function creation process - Function code: {}", dto.getCode());
         Response<Void> response = new Response<>();
         try {
+            User user = this.userRepository.findByEmail(subject).orElse(null);
+            UserValidation.isNull(user == null);
             FunctionValidation.isExistsByCode(this.functionRepository.existsByCode(dto.getCode()));
             Show show = showRepository.findByCode(dto.getShowCode()).orElse(null);
             ShowValidation.isNull(show == null);
             Venue venue = venueRepository.findByCode(dto.getVenueCode()).orElse(null);
             VenueValidation.isNull(venue == null);
-            String functionId = this.functionRepository.create(show.getId(), venue.getId(), FunctionMapper.INSTANCE.toEntity(dto, show, venue));
+            String functionId = this.functionRepository.create(show.getId(), venue.getId(), FunctionMapper.INSTANCE.toEntity(dto, show, venue), user.getId());
             FunctionValidation.isCreate(functionId != null);
             response = new Response<>(HttpStatus.CREATED.value(), UIM001, DIM001, EMPTY_STRING, EMPTY_STRING, null);
         } catch (CustomException e) {
@@ -69,10 +75,12 @@ public class FunctionBusinessImpl implements FunctionBusiness {
     }
 
     @Override
-    public Response<List<FunctionListResponseDTO>> listAllWithFilters(FunctionListRequestDTO functionListRequestDTO) {
+    public Response<List<FunctionListResponseDTO>> listAllWithFilters(FunctionListRequestDTO functionListRequestDTO, String subject) {
         log.info("Starting retrieval of all functions");
         Response<List<FunctionListResponseDTO>> response = new Response<>();
         try {
+            User user = this.userRepository.findByEmail(subject).orElse(null);
+            UserValidation.isNull(user == null);
             List<FunctionListResponseDTO> listFunctionDto = FunctionMapper.INSTANCE.toListDto(
                     functionRepository.findAllWithFilters(functionListRequestDTO)
             );
@@ -91,10 +99,12 @@ public class FunctionBusinessImpl implements FunctionBusiness {
     }
 
     @Override
-    public Response<FunctionDTO> searchByCode(String code) {
+    public Response<FunctionDTO> searchByCode(String code, String subject) {
         log.info("Starting function search - Code: {}", code);
         Response<FunctionDTO> response = new Response<>();
         try {
+            User user = this.userRepository.findByEmail(subject).orElse(null);
+            UserValidation.isNull(user == null);
             Function function = this.functionRepository.findByCode(code).orElse(null);
             FunctionValidation.isNull(function == null);
             FunctionDTO functionDto = FunctionMapper.INSTANCE.toDto(
@@ -122,10 +132,12 @@ public class FunctionBusinessImpl implements FunctionBusiness {
     }
 
     @Override
-    public Response<Void> updateWithCode(String code, FunctionUpdateRequestDTO dto) {
+    public Response<Void> updateWithCode(String code, FunctionUpdateRequestDTO dto, String subject) {
         log.info("Starting function update - Code: {} ", code);
         Response<Void> response = new Response<>();
         try {
+            User user = this.userRepository.findByEmail(subject).orElse(null);
+            UserValidation.isNull(user == null);
             FunctionValidation.isNotExistsByCode(this.functionRepository.existsByCode(code));
             Show show = showRepository.findByCode(dto.getShowCode()).orElse(null);
             ShowValidation.isNull(show == null);
@@ -151,10 +163,12 @@ public class FunctionBusinessImpl implements FunctionBusiness {
     }
 
     @Override
-    public Response<Void> deleteWithCode(String code) {
+    public Response<Void> deleteWithCode(String code, String subject) {
         log.info("Starting function deletion - Code: {}", code);
         Response<Void> response = new Response<>();
         try {
+            User user = this.userRepository.findByEmail(subject).orElse(null);
+            UserValidation.isNull(user == null);
             FunctionValidation.isNotExistsByCode(this.functionRepository.existsByCode(code));
             FunctionValidation.isDelete(this.functionRepository.delete(code));
             response = new Response<>(HttpStatus.OK.value(), UIM005, DIM005, EMPTY_STRING, EMPTY_STRING, null);

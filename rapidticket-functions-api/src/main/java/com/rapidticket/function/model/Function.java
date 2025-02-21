@@ -24,4 +24,5 @@ public class Function implements Serializable {
     private Timestamp date;
     private double basePrice;
     private EnumCurrency currency;
+    private User createdBy;
 }

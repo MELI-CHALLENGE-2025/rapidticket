@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import com.rapidticket.function.business.FunctionBusiness;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import com.rapidticket.function.domain.dto.FunctionDTO;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -43,7 +44,8 @@ public class FunctionRest {
     })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Response<Void> create(@Valid @RequestBody FunctionCreateRequestDTO dto) {
-        return this.functionBusiness.create(dto);
+        String subject = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.functionBusiness.create(dto, subject);
     }
 
     /**
@@ -60,7 +62,8 @@ public class FunctionRest {
     @GetMapping
     public Response<List<FunctionListResponseDTO>> listAllWithFilters(@Valid @ModelAttribute FunctionListRequestDTO dto
     ) {
-        return this.functionBusiness.listAllWithFilters(dto);
+        String subject = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.functionBusiness.listAllWithFilters(dto, subject);
     }
 
     /**
@@ -80,7 +83,8 @@ public class FunctionRest {
     public Response<FunctionDTO> searchByCode(
             @Parameter(description = "Unique code of the function", required = true)
             @PathVariable String code) {
-        return this.functionBusiness.searchByCode(code);
+        String subject = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.functionBusiness.searchByCode(code, subject);
     }
 
     /**
@@ -102,7 +106,8 @@ public class FunctionRest {
             @Parameter(description = "Unique code of the function", required = true)
             @PathVariable String code,
             @Valid @RequestBody FunctionUpdateRequestDTO dto) {
-        return this.functionBusiness.updateWithCode(code, dto);
+        String subject = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.functionBusiness.updateWithCode(code, dto, subject);
     }
 
     /**
@@ -121,6 +126,7 @@ public class FunctionRest {
     public Response<Void> deleteWithCode(
             @Parameter(description = "Unique code of the function", required = true)
             @PathVariable String code) {
-        return this.functionBusiness.deleteWithCode(code);
+        String subject = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.functionBusiness.deleteWithCode(code, subject);
     }
 }

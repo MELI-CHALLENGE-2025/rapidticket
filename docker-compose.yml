@@ -60,7 +60,7 @@ services:
     depends_on:
       - postgres
     ports:
-      - "8083:8083"
+      - "8081:8081"
     networks:
       - rapidticket-network
 
@@ -76,7 +76,7 @@ services:
     depends_on:
       - postgres
     ports:
-      - "8081:8081"
+      - "8083:8083"
     networks:
       - rapidticket-network
 

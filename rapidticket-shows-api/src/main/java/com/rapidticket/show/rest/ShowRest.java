@@ -6,6 +6,7 @@ import com.rapidticket.show.domain.dto.request.ShowListRequestDTO;
 import com.rapidticket.show.domain.dto.request.ShowUpdateRequestDTO;
 import com.rapidticket.show.response.Response;
 import io.swagger.v3.oas.annotations.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -41,7 +42,8 @@ public class ShowRest {
     })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Response<Void> create(@Valid @RequestBody ShowDTO showDTO) {
-        return this.showService.create(showDTO);
+        String subject = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.showService.create(showDTO, subject);
     }
 
     /**
@@ -57,18 +59,10 @@ public class ShowRest {
     })
     @GetMapping
     public Response<List<ShowDTO>> listAllWithFilters(
-            @RequestParam(required = false) String code,
-            @RequestParam(required = false) String name,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
+            @Valid @ModelAttribute ShowListRequestDTO dto
     ) {
-        ShowListRequestDTO dto = new ShowListRequestDTO();
-        dto.setCode(code);
-        dto.setName(name);
-        dto.setPage(page);
-        dto.setSize(size);
-
-        return this.showService.listAllWithFilters(dto);
+        String subject = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.showService.listAllWithFilters(dto, subject);
     }
 
     /**
@@ -88,14 +82,15 @@ public class ShowRest {
     public Response<ShowDTO> searchByCode(
             @Parameter(description = "Unique code of the show", required = true)
             @PathVariable String code) {
-        return this.showService.searchByCode(code);
+        String subject = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.showService.searchByCode(code, subject);
     }
 
     /**
      * Update an existing show by its unique code.
      *
-     * @param code    Unique identifier of the show to update.
-     * @param dto Updated show data.
+     * @param code Unique identifier of the show to update.
+     * @param dto  Updated show data.
      * @return No content if update is successful.
      */
     @Operation(summary = "Update a show by code", description = "Modifies an existing show in the system.")
@@ -110,7 +105,8 @@ public class ShowRest {
             @Parameter(description = "Unique code of the show", required = true)
             @PathVariable String code,
             @Valid @RequestBody ShowUpdateRequestDTO dto) {
-        return this.showService.updateWithCode(code, dto);
+        String subject = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.showService.updateWithCode(code, dto, subject);
     }
 
     /**
@@ -129,6 +125,7 @@ public class ShowRest {
     public Response<Void> deleteWithCode(
             @Parameter(description = "Unique code of the show", required = true)
             @PathVariable String code) {
-        return this.showService.deleteWithCode(code);
+        String subject = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.showService.deleteWithCode(code, subject);
     }
 }

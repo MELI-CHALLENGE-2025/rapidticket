@@ -5,6 +5,9 @@ import static com.rapidticket.venue.utils.messages.VenueConstantMessages.*;
 
 import com.rapidticket.venue.domain.dto.request.VenueUpdateRequestDTO;
 import com.rapidticket.venue.domain.dto.request.VenueListRequestDTO;
+import com.rapidticket.venue.model.User;
+import com.rapidticket.venue.repository.UserRepository;
+import com.rapidticket.venue.validations.UserValidation;
 import com.rapidticket.venue.validations.VenueValidation;
 import com.rapidticket.venue.repository.VenueRepository;
 import com.rapidticket.venue.domain.mapper.VenueMapper;
@@ -25,14 +28,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VenueBusinessImpl implements VenueBusiness {
     private final VenueRepository venueRepository;
+    private final UserRepository userRepository;
 
     @Override
-    public Response<Void> create(VenueDTO dto) throws CustomException {
+    public Response<Void> create(VenueDTO dto, String subject) throws CustomException {
         log.info("Starting venue creation process - Venue code: {}", dto.getCode());
         Response<Void> response = new Response<>();
         try {
+            User user = this.userRepository.findByEmail(subject).orElse(null);
+            UserValidation.isNull(user == null);
             VenueValidation.isExistsByCode(this.venueRepository.existsByCode(dto.getCode()));
-            String venueId = this.venueRepository.create(VenueMapper.INSTANCE.toEntity(dto));
+            String venueId = this.venueRepository.create(VenueMapper.INSTANCE.toEntity(dto), user.getId());
             VenueValidation.isCreate(venueId != null);
             response = new Response<>(HttpStatus.CREATED.value(), UIM001, DIM001, EMPTY_STRING, EMPTY_STRING, null);
         } catch (CustomException e) {
@@ -53,10 +59,12 @@ public class VenueBusinessImpl implements VenueBusiness {
     }
 
     @Override
-    public Response<List<VenueDTO>> listAllWithFilters(VenueListRequestDTO venueListRequestDTO) {
+    public Response<List<VenueDTO>> listAllWithFilters(VenueListRequestDTO venueListRequestDTO, String subject) {
         log.info("Starting retrieval of all venues");
         Response<List<VenueDTO>> response = new Response<>();
         try {
+            User user = this.userRepository.findByEmail(subject).orElse(null);
+            UserValidation.isNull(user == null);
             List<VenueDTO> listVenueDto = VenueMapper.INSTANCE.toListDto(
                     venueRepository.findAllWithFilters(
                             venueListRequestDTO.getCode(),
@@ -64,8 +72,8 @@ public class VenueBusinessImpl implements VenueBusiness {
                             venueListRequestDTO.getLocation(),
                             venueListRequestDTO.getMinCapacity(),
                             venueListRequestDTO.getMaxCapacity(),
-                            venueListRequestDTO.getSize(),
-                            venueListRequestDTO.getPage()
+                            venueListRequestDTO.getPage(),
+                            venueListRequestDTO.getSize()
                     )
             );
             response = new Response<>(HttpStatus.OK.value(), UIM002, DIM002, EMPTY_STRING, EMPTY_STRING, listVenueDto);
@@ -83,10 +91,12 @@ public class VenueBusinessImpl implements VenueBusiness {
     }
 
     @Override
-    public Response<VenueDTO> searchByCode(String code) {
+    public Response<VenueDTO> searchByCode(String code, String subject) {
         log.info("Starting venue search - Code: {}", code);
         Response<VenueDTO> response = new Response<>();
         try {
+            User user = this.userRepository.findByEmail(subject).orElse(null);
+            UserValidation.isNull(user == null);
             Venue venue = this.venueRepository.findByCode(code).orElse(null);
             VenueValidation.isNull(venue == null);
             response = new Response<>(HttpStatus.OK.value(), UIM003, DIM003, EMPTY_STRING, EMPTY_STRING, VenueMapper.INSTANCE.toDto(venue));
@@ -108,10 +118,12 @@ public class VenueBusinessImpl implements VenueBusiness {
     }
 
     @Override
-    public Response<Void> updateWithCode(String code, VenueUpdateRequestDTO dto) {
+    public Response<Void> updateWithCode(String code, VenueUpdateRequestDTO dto, String subject) {
         log.info("Starting venue update - Code: {}, New name: {}", code, dto.getName());
         Response<Void> response = new Response<>();
         try {
+            User user = this.userRepository.findByEmail(subject).orElse(null);
+            UserValidation.isNull(user == null);
             VenueValidation.isNotExistsByCode(this.venueRepository.existsByCode(code));
             VenueValidation.isUpdate(this.venueRepository.updateWithCode(code, VenueMapper.INSTANCE.toEntity(dto)));
             response = new Response<>(HttpStatus.OK.value(), UIM004, DIM004, EMPTY_STRING, EMPTY_STRING, null);
@@ -133,10 +145,12 @@ public class VenueBusinessImpl implements VenueBusiness {
     }
 
     @Override
-    public Response<Void> deleteWithCode(String code) {
+    public Response<Void> deleteWithCode(String code, String subject) {
         log.info("Starting venue deletion - Code: {}", code);
         Response<Void> response = new Response<>();
         try {
+            User user = this.userRepository.findByEmail(subject).orElse(null);
+            UserValidation.isNull(user == null);
             VenueValidation.isNotExistsByCode(this.venueRepository.existsByCode(code));
             VenueValidation.isDelete(this.venueRepository.delete(code));
             response = new Response<>(HttpStatus.OK.value(), UIM005, DIM005, EMPTY_STRING, EMPTY_STRING, null);

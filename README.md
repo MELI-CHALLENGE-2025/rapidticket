@@ -169,11 +169,11 @@ cd rapidticket-auth-api
 ## API Documentation
 Each microservice exposes its APIs using **Swagger**. Once the services are running, you can access:
 
-- **Authentication API** → `http://localhost:8084/api/v1/swagger-ui.html`
-- **User Registration API** → `http://localhost:8085/api/v1/swagger-ui.html`
-- **Function Management API** → `http://localhost:8083/api/v1/swagger-ui.html`
-- **Venue Management API** → `http://localhost:8082/api/v1/swagger-ui.html`
-- **Show Management API** → `http://localhost:8081/api/v1/swagger-ui.html`
+- **Authentication API** → `http://localhost:8084/api/v1/swagger-ui/index.html`
+- **User Registration API** → `http://localhost:8085/api/v1/swagger-ui/index.html`
+- **Function Management API** → `http://localhost:8083/api/v1/swagger-ui/index.html`
+- **Venue Management API** → `http://localhost:8082/api/v1/swagger-ui/index.html`
+- **Show Management API** → `http://localhost:8081/api/v1/swagger-ui/index.html`
 
 ## Deployment
 

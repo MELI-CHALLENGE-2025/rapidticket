@@ -4,6 +4,8 @@ import com.rapidticket.function.domain.dto.request.FunctionCreateRequestDTO;
 import com.rapidticket.function.domain.dto.request.FunctionUpdateRequestDTO;
 import com.rapidticket.function.domain.dto.response.FunctionListResponseDTO;
 import com.rapidticket.function.domain.dto.request.FunctionListRequestDTO;
+import com.rapidticket.function.model.User;
+import com.rapidticket.function.repository.UserRepository;
 import com.rapidticket.function.utils.messages.FunctionConstantMessages;
 import com.rapidticket.function.utils.messages.VenueConstantMessages;
 import com.rapidticket.function.utils.messages.ShowConstantMessages;
@@ -44,6 +46,7 @@ class FunctionBusinessImplTest {
     private static final String ID_FUNCTION = "11111111-1111-1111-1111-111111111111";
     private static final String ID_SHOW = "11111111-1111-1111-1111-111111111111";
     private static final String ID_VENUE = "11111111-1111-1111-1111-111111111111";
+    private static final String ID_USER = "11111111-1111-1111-1111-111111111111";
     private static final String CODE_SHOW = "MOCKED01";
     private static final String CODE_VENUE = "MOCKED01";
     private static final Timestamp DATE = new Timestamp(System.currentTimeMillis());
@@ -55,6 +58,9 @@ class FunctionBusinessImplTest {
     private static final int CAPACITY_VENUE = 300;
     private static final String NAME_SHOW = "Test Show";
     private static final String DESCRIPTION_SHOW = "Test Description";
+    private static final String JWT_SUBJECT = "test@test.com";
+    private static final String EMAIL_USER = "test@test.com";
+    private static final String FULL_NAME_USER = "full_name";
 
     @Mock
     private FunctionRepository functionRepository;
@@ -62,6 +68,8 @@ class FunctionBusinessImplTest {
     private ShowRepository showRepository;
     @Mock
     private VenueRepository venueRepository;
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private FunctionBusinessImpl functionBusinessImpl;
@@ -70,12 +78,18 @@ class FunctionBusinessImplTest {
     private Function function;
     private Show show;
     private Venue venue;
+    private User user;
     private List<Function> listFunction;
     private FunctionListRequestDTO functionListRequestDTO;
     private FunctionUpdateRequestDTO functionUpdateRequestDTO;
 
     @BeforeEach
     void setUp() {
+        user = new User();
+        user.setId(ID_USER);
+        user.setEmail(EMAIL_USER);
+        user.setFullName(FULL_NAME_USER);
+
         functionCreateRequestDTO = new FunctionCreateRequestDTO();
         functionCreateRequestDTO.setCode(CODE_VENUE);
         functionCreateRequestDTO.setShowCode(CODE_SHOW);
@@ -90,6 +104,7 @@ class FunctionBusinessImplTest {
         venue.setName(NAME_VENUE);
         venue.setLocation(LOCATION_VENUE);
         venue.setCapacity(CAPACITY_VENUE);
+        venue.setCreatedBy(user);
 
         show = new Show();
         show.setId(ID_SHOW);
@@ -130,12 +145,13 @@ class FunctionBusinessImplTest {
 
     @Test
     void createSuccess() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.existsByCode(anyString())).thenReturn(false);
         when(this.showRepository.findByCode(anyString())).thenReturn(Optional.of(show));
         when(this.venueRepository.findByCode(anyString())).thenReturn(Optional.of(venue));
-        when(this.functionRepository.create(anyString(), anyString(), any(Function.class))).thenReturn(ID_FUNCTION);
+        when(this.functionRepository.create(anyString(), anyString(), any(Function.class), anyString())).thenReturn(ID_FUNCTION);
 
-        Response<Void> response = this.functionBusinessImpl.create(functionCreateRequestDTO);
+        Response<Void> response = this.functionBusinessImpl.create(functionCreateRequestDTO, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED.value(), response.getStatus());
@@ -145,9 +161,10 @@ class FunctionBusinessImplTest {
 
     @Test
     void createFailure_isExistsByCode() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.existsByCode(anyString())).thenReturn(true);
 
-        Response<Void> response = this.functionBusinessImpl.create(functionCreateRequestDTO);
+        Response<Void> response = this.functionBusinessImpl.create(functionCreateRequestDTO, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
@@ -157,10 +174,11 @@ class FunctionBusinessImplTest {
 
     @Test
     void createFailure_showIsNull() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.existsByCode(anyString())).thenReturn(false);
         when(this.showRepository.findByCode(anyString())).thenReturn(Optional.empty());
 
-        Response<Void> response = this.functionBusinessImpl.create(functionCreateRequestDTO);
+        Response<Void> response = this.functionBusinessImpl.create(functionCreateRequestDTO, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
@@ -170,11 +188,12 @@ class FunctionBusinessImplTest {
 
     @Test
     void createFailure_venueIsNull() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.existsByCode(anyString())).thenReturn(false);
         when(this.showRepository.findByCode(anyString())).thenReturn(Optional.of(show));
         when(this.venueRepository.findByCode(anyString())).thenReturn(Optional.empty());
 
-        Response<Void> response = this.functionBusinessImpl.create(functionCreateRequestDTO);
+        Response<Void> response = this.functionBusinessImpl.create(functionCreateRequestDTO, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
@@ -184,12 +203,13 @@ class FunctionBusinessImplTest {
 
     @Test
     void createFailure_isNotCreate() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.existsByCode(anyString())).thenReturn(false);
         when(this.showRepository.findByCode(anyString())).thenReturn(Optional.of(show));
         when(this.venueRepository.findByCode(anyString())).thenReturn(Optional.of(venue));
-        when(this.functionRepository.create(anyString(), anyString(), any(Function.class))).thenReturn(null);
+        when(this.functionRepository.create(anyString(), anyString(), any(Function.class), anyString())).thenReturn(null);
 
-        Response<Void> response = this.functionBusinessImpl.create(functionCreateRequestDTO);
+        Response<Void> response = this.functionBusinessImpl.create(functionCreateRequestDTO, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
@@ -199,9 +219,10 @@ class FunctionBusinessImplTest {
 
     @Test
     void createFailure_GenericException() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.existsByCode(anyString())).thenThrow(new NullPointerException(NULL_POINT_EXCEPTION));
 
-        Response<Void> response = this.functionBusinessImpl.create(functionCreateRequestDTO);
+        Response<Void> response = this.functionBusinessImpl.create(functionCreateRequestDTO, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatus());
@@ -211,9 +232,10 @@ class FunctionBusinessImplTest {
 
     @Test
     void findAllWithFiltersSuccess() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.findAllWithFilters(functionListRequestDTO)).thenReturn(listFunction);
 
-        Response<List<FunctionListResponseDTO>> response = this.functionBusinessImpl.listAllWithFilters(functionListRequestDTO);
+        Response<List<FunctionListResponseDTO>> response = this.functionBusinessImpl.listAllWithFilters(functionListRequestDTO, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK.value(), response.getStatus());
@@ -223,9 +245,10 @@ class FunctionBusinessImplTest {
 
     @Test
     void listAllWithFiltersFailure_GenericException() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.findAllWithFilters(functionListRequestDTO)).thenThrow(new NullPointerException("Simulated NPE"));
 
-        Response<List<FunctionListResponseDTO>> response = this.functionBusinessImpl.listAllWithFilters(functionListRequestDTO);
+        Response<List<FunctionListResponseDTO>> response = this.functionBusinessImpl.listAllWithFilters(functionListRequestDTO, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatus());
@@ -235,9 +258,10 @@ class FunctionBusinessImplTest {
 
     @Test
     void searchByCodeSuccess() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.findByCode(anyString())).thenReturn(Optional.of(function));
 
-        Response<FunctionDTO> response = this.functionBusinessImpl.searchByCode(CODE_VENUE);
+        Response<FunctionDTO> response = this.functionBusinessImpl.searchByCode(CODE_VENUE, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK.value(), response.getStatus());
@@ -247,9 +271,10 @@ class FunctionBusinessImplTest {
 
     @Test
     void searchByCodeFailure_isNull() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.findByCode(anyString())).thenReturn(Optional.empty());
 
-        Response<FunctionDTO> response = this.functionBusinessImpl.searchByCode(CODE_VENUE);
+        Response<FunctionDTO> response = this.functionBusinessImpl.searchByCode(CODE_VENUE, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
@@ -259,9 +284,10 @@ class FunctionBusinessImplTest {
 
     @Test
     void searchByCodeFailure_GenericException() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.findByCode(anyString())).thenThrow(new NullPointerException(NULL_POINT_EXCEPTION));
 
-        Response<FunctionDTO> response = this.functionBusinessImpl.searchByCode(CODE_VENUE);
+        Response<FunctionDTO> response = this.functionBusinessImpl.searchByCode(CODE_VENUE, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatus());
@@ -272,12 +298,13 @@ class FunctionBusinessImplTest {
 
     @Test
     void updateWithCodeSuccess() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.existsByCode(anyString())).thenReturn(true);
         when(this.showRepository.findByCode(anyString())).thenReturn(Optional.of(show));
         when(this.venueRepository.findByCode(anyString())).thenReturn(Optional.of(venue));
         when(this.functionRepository.updateWithCode(anyString(), any(Function.class))).thenReturn(true);
 
-        Response<Void> response = this.functionBusinessImpl.updateWithCode(CODE_VENUE, functionUpdateRequestDTO);
+        Response<Void> response = this.functionBusinessImpl.updateWithCode(CODE_VENUE, functionUpdateRequestDTO, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK.value(), response.getStatus());
@@ -287,9 +314,10 @@ class FunctionBusinessImplTest {
 
     @Test
     void updateWithCodeFailure_isNotExistsByCode() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.existsByCode(anyString())).thenReturn(false);
 
-        Response<Void> response = this.functionBusinessImpl.updateWithCode(CODE_VENUE, functionUpdateRequestDTO);
+        Response<Void> response = this.functionBusinessImpl.updateWithCode(CODE_VENUE, functionUpdateRequestDTO, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
@@ -299,10 +327,11 @@ class FunctionBusinessImplTest {
 
     @Test
     void updateWithCodeFailure_showIsNull() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.existsByCode(anyString())).thenReturn(true);
         when(this.showRepository.findByCode(anyString())).thenReturn(Optional.empty());
 
-        Response<Void> response = this.functionBusinessImpl.updateWithCode(CODE_VENUE, functionUpdateRequestDTO);
+        Response<Void> response = this.functionBusinessImpl.updateWithCode(CODE_VENUE, functionUpdateRequestDTO, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
@@ -312,11 +341,12 @@ class FunctionBusinessImplTest {
 
     @Test
     void updateWithCodeFailure_venueIsnull() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.existsByCode(anyString())).thenReturn(true);
         when(this.showRepository.findByCode(anyString())).thenReturn(Optional.of(show));
         when(this.venueRepository.findByCode(anyString())).thenReturn(Optional.empty());
 
-        Response<Void> response = this.functionBusinessImpl.updateWithCode(CODE_VENUE, functionUpdateRequestDTO);
+        Response<Void> response = this.functionBusinessImpl.updateWithCode(CODE_VENUE, functionUpdateRequestDTO, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
@@ -326,12 +356,13 @@ class FunctionBusinessImplTest {
 
     @Test
     void updateWithCodeFailure_isUpdate() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.existsByCode(anyString())).thenReturn(true);
         when(this.showRepository.findByCode(anyString())).thenReturn(Optional.of(show));
         when(this.venueRepository.findByCode(anyString())).thenReturn(Optional.of(venue));
         when(this.functionRepository.updateWithCode(anyString(), any(Function.class))).thenReturn(false);
 
-        Response<Void> response = this.functionBusinessImpl.updateWithCode(CODE_VENUE, functionUpdateRequestDTO);
+        Response<Void> response = this.functionBusinessImpl.updateWithCode(CODE_VENUE, functionUpdateRequestDTO, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
@@ -341,9 +372,10 @@ class FunctionBusinessImplTest {
 
     @Test
     void updateWithCodeFailure_GenericException() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.existsByCode(anyString())).thenThrow(new NullPointerException(NULL_POINT_EXCEPTION));
 
-        Response<Void> response = this.functionBusinessImpl.updateWithCode(CODE_VENUE, functionUpdateRequestDTO);
+        Response<Void> response = this.functionBusinessImpl.updateWithCode(CODE_VENUE, functionUpdateRequestDTO, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatus());
@@ -353,10 +385,11 @@ class FunctionBusinessImplTest {
 
     @Test
     void deleteWithCodeSuccess() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.existsByCode(anyString())).thenReturn(true);
         when(this.functionRepository.delete(anyString())).thenReturn(true);
 
-        Response<Void> response = this.functionBusinessImpl.deleteWithCode(CODE_VENUE);
+        Response<Void> response = this.functionBusinessImpl.deleteWithCode(CODE_VENUE, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK.value(), response.getStatus());
@@ -366,9 +399,10 @@ class FunctionBusinessImplTest {
 
     @Test
     void deleteWithCodeFailure_isNotExistsByCode() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.existsByCode(anyString())).thenReturn(false);
 
-        Response<Void> response = this.functionBusinessImpl.deleteWithCode(CODE_VENUE);
+        Response<Void> response = this.functionBusinessImpl.deleteWithCode(CODE_VENUE, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
@@ -378,10 +412,11 @@ class FunctionBusinessImplTest {
 
     @Test
     void deleteWithCodeFailure_isNotDelete() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.existsByCode(anyString())).thenReturn(true);
         when(this.functionRepository.delete(anyString())).thenReturn(false);
 
-        Response<Void> response = this.functionBusinessImpl.deleteWithCode(CODE_VENUE);
+        Response<Void> response = this.functionBusinessImpl.deleteWithCode(CODE_VENUE, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
@@ -391,9 +426,10 @@ class FunctionBusinessImplTest {
 
     @Test
     void deleteWithCodeFailure_GenericException() {
+        when(this.userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(this.functionRepository.existsByCode(anyString())).thenThrow(new NullPointerException(NULL_POINT_EXCEPTION));
 
-        Response<Void> response = this.functionBusinessImpl.deleteWithCode(CODE_VENUE);
+        Response<Void> response = this.functionBusinessImpl.deleteWithCode(CODE_VENUE, JWT_SUBJECT);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatus());

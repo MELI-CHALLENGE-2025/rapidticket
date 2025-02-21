@@ -2,6 +2,7 @@ package com.rapidticket.function.repository;
 
 import com.rapidticket.function.domain.dto.request.FunctionListRequestDTO;
 import com.rapidticket.function.model.Show;
+import com.rapidticket.function.model.User;
 import com.rapidticket.function.model.Venue;
 import com.rapidticket.function.utils.enums.EnumCurrency;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -31,11 +32,11 @@ public class FunctionRepositoryImpl implements FunctionRepository {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public String create(String showId, String venueId, Function function) {
+    public String create(String showId, String venueId, Function function, String userId) {
         try {
             UUID uuid = UUID.randomUUID();
-            String sql = "INSERT INTO functions (id, code, show_id, venue_id, date, base_price, currency) " +
-                    "VALUES (:id, :code, :show_id, :venue_id, :date, :base_price, :currency)";
+            String sql = "INSERT INTO functions (id, code, show_id, venue_id, date, base_price, currency, created_by) " +
+                    "VALUES (:id, :code, :show_id, :venue_id, :date, :base_price, :currency, :createdBy)";
 
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("id", uuid)
@@ -43,8 +44,9 @@ public class FunctionRepositoryImpl implements FunctionRepository {
                     .addValue(SHOW_ID, UUID.fromString(showId))
                     .addValue(VENUE_ID, UUID.fromString(venueId))
                     .addValue("date", function.getDate())
-                    .addValue(FUNCTION_BASE_PRICE, function.getBasePrice())
-                    .addValue(FUNCTION_CURRENCY, function.getCurrency().name(), Types.OTHER);
+                    .addValue("base_price", function.getBasePrice())
+                    .addValue("currency", function.getCurrency().name(), Types.OTHER)
+                    .addValue("createdBy", UUID.fromString(userId));
 
             int rowsAffected = namedParameterJdbcTemplate.update(sql, params);
             return rowsAffected > 0 ? uuid.toString() : null;
@@ -78,10 +80,12 @@ public class FunctionRepositoryImpl implements FunctionRepository {
                         f.id AS function_id, f.code AS function_code, f.date AS function_date,
                         f.base_price AS function_base_price, f.currency AS function_currency, f.created_at, 
                         s.id AS show_id, s.code AS show_code, s.name AS show_name, s.description AS show_description,
-                        v.id AS venue_id, v.code AS venue_code, v.name AS venue_name, v.capacity AS venue_capacity, v.location AS venue_location 
+                        v.id AS venue_id, v.code AS venue_code, v.name AS venue_name, v.capacity AS venue_capacity, v.location AS venue_location,
+                        u.id AS user_id, u.email AS user_email, u.full_name AS user_full_name
                     FROM functions f
                     JOIN shows s ON f.show_id = s.id
                     JOIN venues v ON f.venue_id = v.id
+                    JOIN users u ON f.created_by = u.id
                     WHERE 1=1
                     """
             );
@@ -136,10 +140,12 @@ public class FunctionRepositoryImpl implements FunctionRepository {
             SELECT
                 f.id AS function_id, f.code AS function_code, f.date AS function_date, f.base_price AS function_base_price, f.currency AS function_currency,
                 s.id AS show_id, s.code AS show_code, s.name AS show_name, s.description AS show_description,
-                v.id AS venue_id, v.code AS venue_code, v.name AS venue_name, v.capacity AS venue_capacity, v.location AS venue_location
+                v.id AS venue_id, v.code AS venue_code, v.name AS venue_name, v.capacity AS venue_capacity, v.location AS venue_location,
+                u.id AS user_id, u.email AS user_email, u.full_name AS user_full_name
             FROM functions f
             JOIN shows s ON f.show_id = s.id
             JOIN venues v ON f.venue_id = v.id
+            JOIN users u ON f.created_by = u.id
             WHERE f.code = :code
             """;
 
@@ -192,6 +198,11 @@ public class FunctionRepositoryImpl implements FunctionRepository {
     }
 
     private final RowMapper<Function> mapper = (rs, rowNum) -> {
+        User user = new User();
+        user.setId(rs.getString("user_id"));
+        user.setEmail(rs.getString("user_email"));
+        user.setFullName(rs.getString("user_full_name"));
+
         Show show = new Show();
         show.setId(rs.getString(SHOW_ID));
         show.setCode(rs.getString("show_code"));
@@ -213,6 +224,7 @@ public class FunctionRepositoryImpl implements FunctionRepository {
         function.setDate(rs.getTimestamp("function_date"));
         function.setBasePrice(rs.getDouble(FUNCTION_BASE_PRICE));
         function.setCurrency(EnumCurrency.valueOf(rs.getString(FUNCTION_CURRENCY)));
+        function.setCreatedBy(user);
 
         return function;
     };

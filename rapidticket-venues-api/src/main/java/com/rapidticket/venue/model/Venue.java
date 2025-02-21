@@ -15,4 +15,5 @@ public class Venue {
     private String name;
     private String location;
     private int capacity;
+    private User createdBy;
 }

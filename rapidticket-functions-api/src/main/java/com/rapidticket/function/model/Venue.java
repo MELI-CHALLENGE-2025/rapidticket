@@ -21,4 +21,5 @@ public class Venue implements Serializable {
     private String name;
     private String location;
     private int capacity;
+    private User createdBy;
 }

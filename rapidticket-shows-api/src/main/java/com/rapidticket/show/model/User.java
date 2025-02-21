@@ -1,5 +1,6 @@
 package com.rapidticket.show.model;
 
+import com.rapidticket.show.utils.enums.EnumRoleUser;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.Getter;
@@ -9,10 +10,10 @@ import lombok.Setter;
 @Getter
 @ToString
 @NoArgsConstructor
-public class Show {
+public class User {
     private String id;
-    private String code;
-    private String name;
-    private String description;
-    private User createdBy;
+    private String email;
+    private String fullName;
+    private String password;
+    private EnumRoleUser role;
 }

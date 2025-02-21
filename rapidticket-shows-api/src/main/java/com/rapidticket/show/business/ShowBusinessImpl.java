@@ -5,11 +5,14 @@ import static com.rapidticket.show.utils.messages.ConstantMessages.*;
 
 import com.rapidticket.show.domain.dto.request.ShowListRequestDTO;
 import com.rapidticket.show.domain.dto.request.ShowUpdateRequestDTO;
+import com.rapidticket.show.model.User;
+import com.rapidticket.show.repository.UserRepository;
 import com.rapidticket.show.validations.ShowValidation;
 import com.rapidticket.show.repository.ShowRepository;
 import com.rapidticket.show.exception.CustomException;
 import com.rapidticket.show.domain.mapper.ShowMapper;
 import com.rapidticket.show.domain.dto.ShowDTO;
+import com.rapidticket.show.validations.UserValidation;
 import org.springframework.stereotype.Service;
 import com.rapidticket.show.response.Response;
 import org.springframework.http.HttpStatus;
@@ -26,14 +29,17 @@ import java.util.List;
 public class ShowBusinessImpl implements ShowBusiness {
 
     private final ShowRepository showRepository;
+    private final UserRepository userRepository;
 
     @Override
-    public Response<Void> create(ShowDTO dto) throws CustomException {
+    public Response<Void>  create(ShowDTO dto, String subject) throws CustomException {
         log.info("Starting show creation process - Show name: {}", dto.getName());
         Response<Void> response = new Response<>();
         try {
+            User user = this.userRepository.findByEmail(subject).orElse(null);
+            UserValidation.isNull(user == null);
             ShowValidation.isExistsByCode(this.showRepository.existsByCode(dto.getCode()));
-            String showId = this.showRepository.create(ShowMapper.INSTANCE.toEntity(dto));
+            String showId = this.showRepository.create(ShowMapper.INSTANCE.toEntity(dto, user), user.getId());
             ShowValidation.isCreate(showId != null);
             response = new Response<>(HttpStatus.CREATED.value(), UIM001, DIM001, EMPTY_STRING, EMPTY_STRING, null);
         } catch (CustomException e) {
@@ -54,16 +60,18 @@ public class ShowBusinessImpl implements ShowBusiness {
     }
 
     @Override
-    public Response<List<ShowDTO>> listAllWithFilters(ShowListRequestDTO showListRequestDTO) {
+    public Response<List<ShowDTO>> listAllWithFilters(ShowListRequestDTO showListRequestDTO, String subject) {
         log.info("Starting retrieval of all shows");
         Response<List<ShowDTO>> response = new Response<>();
         try {
+            User user = this.userRepository.findByEmail(subject).orElse(null);
+            UserValidation.isNull(user == null);
             List<ShowDTO> listShowDto = ShowMapper.INSTANCE.toListDto(
                     this.showRepository.findAllWithFilters(
                             showListRequestDTO.getCode(),
                             showListRequestDTO.getName(),
-                            showListRequestDTO.getSize(),
-                            showListRequestDTO.getPage()
+                            showListRequestDTO.getPage(),
+                            showListRequestDTO.getSize()
                     )
             );
             response = new Response<>(HttpStatus.OK.value(), UIM002, DIM002, EMPTY_STRING, EMPTY_STRING, listShowDto);
@@ -81,10 +89,12 @@ public class ShowBusinessImpl implements ShowBusiness {
     }
 
     @Override
-    public Response<ShowDTO> searchByCode(String code) {
+    public Response<ShowDTO> searchByCode(String code, String subject) {
         log.info("Starting show search - Code: {}", code);
         Response<ShowDTO> response = new Response<>();
         try {
+            User user = this.userRepository.findByEmail(subject).orElse(null);
+            UserValidation.isNull(user == null);
             Show show = this.showRepository.findByCode(code).orElse(null);
             ShowValidation.isNull(show == null);
             response = new Response<>(HttpStatus.OK.value(), UIM003, DIM003, EMPTY_STRING, EMPTY_STRING, ShowMapper.INSTANCE.toDto(show));
@@ -106,10 +116,12 @@ public class ShowBusinessImpl implements ShowBusiness {
     }
 
     @Override
-    public Response<Void> updateWithCode(String code, ShowUpdateRequestDTO dto) {
+    public Response<Void> updateWithCode(String code, ShowUpdateRequestDTO dto, String subject) {
         log.info("Starting show update - Code: {}, New name: {}", code, dto.getName());
         Response<Void> response = new Response<>();
         try {
+            User user = this.userRepository.findByEmail(subject).orElse(null);
+            UserValidation.isNull(user == null);
             ShowValidation.isNotExistsByCode(this.showRepository.existsByCode(code));
             ShowValidation.isUpdate(this.showRepository.updateWithCode(code, ShowMapper.INSTANCE.toEntity(dto)));
             response = new Response<>(HttpStatus.OK.value(), UIM004, DIM004, EMPTY_STRING, EMPTY_STRING, null);
@@ -131,10 +143,12 @@ public class ShowBusinessImpl implements ShowBusiness {
     }
 
     @Override
-    public Response<Void> deleteWithCode(String code) {
+    public Response<Void> deleteWithCode(String code, String subject) {
         log.info("Starting show deletion - Code: {}", code);
         Response<Void> response = new Response<>();
         try {
+            User user = this.userRepository.findByEmail(subject).orElse(null);
+            UserValidation.isNull(user == null);
             ShowValidation.isNotExistsByCode(this.showRepository.existsByCode(code));
             ShowValidation.isDelete(this.showRepository.delete(code));
             response = new Response<>(HttpStatus.OK.value(), UIM005, DIM005, EMPTY_STRING, EMPTY_STRING, null);
