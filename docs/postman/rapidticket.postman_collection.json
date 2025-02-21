@@ -7,16 +7,16 @@
 	},
 	"item": [
 		{
-			"name": "Shows",
+			"name": "Register",
 			"item": [
 				{
-					"name": "/shows",
+					"name": "Register",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"code\": \"SHOW17\",\r\n    \"name\": \"The Great Show\",\r\n    \"description\": \"An amazing performance that you can't miss!\"\r\n}",
+							"raw": "{\r\n    \"fullName\": \"full_name\",\r\n    \"email\": \"test1@gmail.com\",\r\n    \"password\": \"password\",\r\n    \"role\": \"ADMIN\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -24,16 +24,92 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8081/api/v1/shows",
-							"protocol": "http",
+							"raw": "{{url_register}}",
 							"host": [
-								"localhost"
+								"{{url_register}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"authorization\", jsonData.data.token);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test1@gmail.com\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_auth}}/login",
+							"host": [
+								"{{url_auth}}"
 							],
-							"port": "8081",
 							"path": [
-								"api",
-								"v1",
-								"shows"
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Shows",
+			"item": [
+				{
+					"name": "/shows",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"code\": \"SHOW18\",\r\n    \"name\": \"The Great Show\",\r\n    \"description\": \"An amazing performance that you can't miss!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_shows}}",
+							"host": [
+								"{{url_shows}}"
 							]
 						}
 					},
@@ -42,24 +118,27 @@
 				{
 					"name": "/shows",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8081/api/v1/shows?size=1&page=1",
-							"protocol": "http",
+							"raw": "{{url_shows}}?size=10&page=1",
 							"host": [
-								"localhost"
-							],
-							"port": "8081",
-							"path": [
-								"api",
-								"v1",
-								"shows"
+								"{{url_shows}}"
 							],
 							"query": [
 								{
 									"key": "size",
-									"value": "1"
+									"value": "10"
 								},
 								{
 									"key": "page",
@@ -83,20 +162,25 @@
 				{
 					"name": "/shows/{code}",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8081/api/v1/shows/SH001",
-							"protocol": "http",
+							"raw": "{{url_shows}}/SH003",
 							"host": [
-								"localhost"
+								"{{url_shows}}"
 							],
-							"port": "8081",
 							"path": [
-								"api",
-								"v1",
-								"shows",
-								"SH001"
+								"SH003"
 							]
 						}
 					},
@@ -105,6 +189,16 @@
 				{
 					"name": "/shows/{code}",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PATCH",
 						"header": [],
 						"body": {
@@ -117,17 +211,12 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8081/api/v1/shows/SHOW17",
-							"protocol": "http",
+							"raw": "{{url_shows}}/SHOW18",
 							"host": [
-								"localhost"
+								"{{url_shows}}"
 							],
-							"port": "8081",
 							"path": [
-								"api",
-								"v1",
-								"shows",
-								"SHOW17"
+								"SHOW18"
 							]
 						}
 					},
@@ -136,20 +225,25 @@
 				{
 					"name": "/shows/{code}",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8081/api/v1/shows/SHOW17",
-							"protocol": "http",
+							"raw": "{{url_shows}}/SHOW18",
 							"host": [
-								"localhost"
+								"{{url_shows}}"
 							],
-							"port": "8081",
 							"path": [
-								"api",
-								"v1",
-								"shows",
-								"SHOW17"
+								"SHOW18"
 							]
 						}
 					},
@@ -163,6 +257,16 @@
 				{
 					"name": "/venues",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -175,16 +279,9 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8082/api/v1/venues",
-							"protocol": "http",
+							"raw": "{{url_venues}}",
 							"host": [
-								"localhost"
-							],
-							"port": "8082",
-							"path": [
-								"api",
-								"v1",
-								"venues"
+								"{{url_venues}}"
 							]
 						}
 					},
@@ -193,24 +290,27 @@
 				{
 					"name": "/venues",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8082/api/v1/venues?size=1&page=1",
-							"protocol": "http",
+							"raw": "{{url_venues}}?size=10&page=1",
 							"host": [
-								"localhost"
-							],
-							"port": "8082",
-							"path": [
-								"api",
-								"v1",
-								"venues"
+								"{{url_venues}}"
 							],
 							"query": [
 								{
 									"key": "size",
-									"value": "1"
+									"value": "10"
 								},
 								{
 									"key": "page",
@@ -244,20 +344,25 @@
 				{
 					"name": "/venues/{code}",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8082/api/v1/venues/VN001",
-							"protocol": "http",
+							"raw": "{{url_venues}}/VENUE1",
 							"host": [
-								"localhost"
+								"{{url_venues}}"
 							],
-							"port": "8082",
 							"path": [
-								"api",
-								"v1",
-								"venues",
-								"VN001"
+								"VENUE1"
 							]
 						}
 					},
@@ -266,6 +371,16 @@
 				{
 					"name": "/venues/{code}",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PATCH",
 						"header": [],
 						"body": {
@@ -278,16 +393,11 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8082/api/v1/venues/VENUE1",
-							"protocol": "http",
+							"raw": "{{url_venues}}/VENUE1",
 							"host": [
-								"localhost"
+								"{{url_venues}}"
 							],
-							"port": "8082",
 							"path": [
-								"api",
-								"v1",
-								"venues",
 								"VENUE1"
 							]
 						}
@@ -297,19 +407,24 @@
 				{
 					"name": "/venues/{code}",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8082/api/v1/venues/VENUE1",
-							"protocol": "http",
+							"raw": "{{url_venues}}/VENUE1",
 							"host": [
-								"localhost"
+								"{{url_venues}}"
 							],
-							"port": "8082",
 							"path": [
-								"api",
-								"v1",
-								"venues",
 								"VENUE1"
 							]
 						}
@@ -324,11 +439,21 @@
 				{
 					"name": "/functions",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"code\": \"FN004\",\r\n    \"showCode\": \"SH001\",\r\n    \"venueCode\": \"VN001\",\r\n    \"date\": \"2025-03-10T16:30:00.000+00:00\",\r\n    \"basePrice\": 20.5,\r\n    \"currency\": \"USD\"\r\n}\r\n",
+							"raw": "{\r\n    \"code\": \"FN005\",\r\n    \"showCode\": \"SH003\",\r\n    \"venueCode\": \"VENUE1\",\r\n    \"date\": \"2025-03-10T16:30:00.000+00:00\",\r\n    \"basePrice\": 20.5,\r\n    \"currency\": \"USD\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -336,16 +461,9 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8083/api/v1/functions",
-							"protocol": "http",
+							"raw": "{{url_functions}}",
 							"host": [
-								"localhost"
-							],
-							"port": "8083",
-							"path": [
-								"api",
-								"v1",
-								"functions"
+								"{{url_functions}}"
 							]
 						}
 					},
@@ -354,19 +472,22 @@
 				{
 					"name": "/functions",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8083/api/v1/functions?size=10&page=1&code=FN002&minBasePrice=51&maxBasePrice=300&currency=USD&showCode=SH002&venueCode=VN001",
-							"protocol": "http",
+							"raw": "{{url_functions}}?size=10&page=1",
 							"host": [
-								"localhost"
-							],
-							"port": "8083",
-							"path": [
-								"api",
-								"v1",
-								"functions"
+								"{{url_functions}}"
 							],
 							"query": [
 								{
@@ -379,27 +500,33 @@
 								},
 								{
 									"key": "code",
-									"value": "FN002"
+									"value": "FN001",
+									"disabled": true
 								},
 								{
 									"key": "minBasePrice",
-									"value": "51"
+									"value": "51",
+									"disabled": true
 								},
 								{
 									"key": "maxBasePrice",
-									"value": "300"
+									"value": "300",
+									"disabled": true
 								},
 								{
 									"key": "currency",
-									"value": "USD"
+									"value": "USD",
+									"disabled": true
 								},
 								{
 									"key": "showCode",
-									"value": "SH002"
+									"value": "SH002",
+									"disabled": true
 								},
 								{
 									"key": "venueCode",
-									"value": "VN001"
+									"value": "VN001",
+									"disabled": true
 								}
 							]
 						}
@@ -409,19 +536,24 @@
 				{
 					"name": "/functions/{code}",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8083/api/v1/functions/FN004",
-							"protocol": "http",
+							"raw": "{{url_functions}}/FN004",
 							"host": [
-								"localhost"
+								"{{url_functions}}"
 							],
-							"port": "8083",
 							"path": [
-								"api",
-								"v1",
-								"functions",
 								"FN004"
 							]
 						}
@@ -431,11 +563,21 @@
 				{
 					"name": "/functions/{code}",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"showCode\": \"SH002\",\r\n    \"venueCode\": \"VN002\",\r\n    \"date\": \"2025-03-10T16:30:00.000+00:00\",\r\n    \"basePrice\": 20.7,\r\n    \"currency\": \"USD\"\r\n}",
+							"raw": "{\r\n    \"code\": \"FN005\",\r\n    \"showCode\": \"SH003\",\r\n    \"venueCode\": \"VENUE1\",\r\n    \"date\": \"2025-03-10T16:30:00.000+00:00\",\r\n    \"basePrice\": 20.5,\r\n    \"currency\": \"USD\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -443,16 +585,11 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8083/api/v1/functions/FN004",
-							"protocol": "http",
+							"raw": "{{url_functions}}/FN004",
 							"host": [
-								"localhost"
+								"{{url_functions}}"
 							],
-							"port": "8083",
 							"path": [
-								"api",
-								"v1",
-								"functions",
 								"FN004"
 							]
 						}
@@ -462,19 +599,24 @@
 				{
 					"name": "/functions/{code}",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8083/api/v1/functions/FN001",
-							"protocol": "http",
+							"raw": "{{url_functions}}/FN001",
 							"host": [
-								"localhost"
+								"{{url_functions}}"
 							],
-							"port": "8083",
 							"path": [
-								"api",
-								"v1",
-								"functions",
 								"FN001"
 							]
 						}
